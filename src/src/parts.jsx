@@ -1,278 +1,177 @@
-// Shared building blocks: nav, footer, primitives.
+const { useState } = React;
 
-const { useState, useEffect, useRef } = React;
+const LOGO_SRC = "design-mockups/keystone_logo.png";
+const CHECKSUM = "4b1d8e9f0c2a7e6f5d3b9c8a7e6f5d4b3c2a1e0f9d8c7b6a5e4d3c2b1a0f9e8d";
 
-const Eyebrow = ({ children, num }) => (
-  <div
-    className="mono"
-    style={{
-      fontSize: 11,
-      letterSpacing: "0.12em",
-      textTransform: "uppercase",
-      color: "var(--fg-muted)",
-      fontWeight: 500,
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-    }}
-  >
-    {num ? <span style={{ color: "var(--accent)" }}>[{num}]</span> : <span style={{ color: "var(--accent)" }}>//</span>}
-    <span>{children}</span>
-  </div>
-);
-
-const Btn = ({ children, primary, href = "#", icon, onClick }) => {
-  const base = {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "11px 18px",
-    borderRadius: 6,
-    fontSize: 14,
-    fontWeight: 500,
-    letterSpacing: "-0.005em",
-    textDecoration: "none",
-    cursor: "pointer",
-    border: "1px solid",
-    transition: "background 120ms, border-color 120ms, color 120ms",
-    lineHeight: 1,
-  };
-  const styles = primary
-    ? {
-        ...base,
-        background: "var(--accent)",
-        borderColor: "var(--accent)",
-        color: "#FFFFFF",
-      }
-    : {
-        ...base,
-        background: "transparent",
-        borderColor: "var(--border)",
-        color: "var(--fg)",
-      };
-  return (
-    <a
-      href={href}
-      onClick={onClick}
-      style={styles}
-      onMouseEnter={(e) => {
-        if (primary) {
-          e.currentTarget.style.background = "var(--accent-hover)";
-          e.currentTarget.style.borderColor = "var(--accent-hover)";
-        } else {
-          e.currentTarget.style.borderColor = "var(--fg)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (primary) {
-          e.currentTarget.style.background = "var(--accent)";
-          e.currentTarget.style.borderColor = "var(--accent)";
-        } else {
-          e.currentTarget.style.borderColor = "var(--border)";
-        }
-      }}
-    >
-      {icon}
-      <span>{children}</span>
-    </a>
-  );
-};
-
-const Nav = ({ theme, setTheme }) => {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const linkStyle = {
-    fontSize: 13,
-    color: "var(--fg-muted)",
-    textDecoration: "none",
-    padding: "6px 4px",
-  };
-
-  return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        background: scrolled ? "color-mix(in oklab, var(--bg) 85%, transparent)" : "var(--bg)",
-        backdropFilter: scrolled ? "blur(10px)" : "none",
-        borderBottom: scrolled ? "1px solid var(--border-subtle)" : "1px solid transparent",
-        transition: "border-color 200ms, background 200ms",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1280,
-          margin: "0 auto",
-          padding: "14px 32px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 32,
-        }}
-      >
-        <a href="#" style={{ display: "flex", alignItems: "center", gap: 9, textDecoration: "none", color: "var(--fg)" }}>
-          <span style={{ color: "var(--accent)" }}><IconKeystone size={18} /></span>
-          <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>keystone</span>
-          <span className="mono" style={{ fontSize: 10, color: "var(--fg-subtle)", marginLeft: 4, paddingLeft: 10, borderLeft: "1px solid var(--border-subtle)" }}>
-            v1.0.0
-          </span>
-        </a>
-
-        <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          <a href="#capabilities" style={linkStyle}>Workbench</a>
-          <a href="#matrix" style={linkStyle}>Algorithms</a>
-          <a href="#quantum" style={linkStyle}>Quantum</a>
-          <a href="#" style={linkStyle}>Docs</a>
-          <a href="#" style={linkStyle}>Codex</a>
-        </nav>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button
-            aria-label="Toggle theme"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            style={{
-              background: "transparent",
-              border: "1px solid var(--border-subtle)",
-              color: "var(--fg-muted)",
-              cursor: "pointer",
-              width: 34,
-              height: 34,
-              borderRadius: 6,
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {theme === "dark" ? <IconSun size={15} /> : <IconMoon size={15} />}
-          </button>
-          <a
-            href="#"
-            style={{
-              ...linkStyle,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <IconGithub size={15} />
-            <span>GitHub</span>
-          </a>
-          <Btn primary icon={<IconDownload size={15} />}>Download</Btn>
-        </div>
-      </div>
-    </header>
-  );
-};
-
-// ============================================================
-// Window chrome that frames product screenshots
-const WindowChrome = ({ children, title = "keystone", trafficStyle = "linear" }) => {
-  return (
-    <div
-      style={{
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-        overflow: "hidden",
-        background: "var(--surface)",
-        boxShadow: "0 1px 0 0 rgba(0,0,0,0.02)",
-      }}
-    >
-      <div
-        style={{
-          height: 34,
-          background: "var(--surface-raised)",
-          borderBottom: "1px solid var(--border-subtle)",
-          display: "flex",
-          alignItems: "center",
-          padding: "0 12px",
-          gap: 10,
-        }}
-      >
-        <div style={{ display: "flex", gap: 6 }}>
-          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--border)" }} />
-          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--border)" }} />
-          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--border)" }} />
-        </div>
-        <div className="mono" style={{ fontSize: 11, color: "var(--fg-subtle)", marginLeft: 6 }}>
-          {title}
-        </div>
-        <div style={{ flex: 1 }} />
-        <div className="mono" style={{ fontSize: 11, color: "var(--fg-subtle)" }}>
-          {trafficStyle}
-        </div>
-      </div>
-      <div style={{ background: "#0F1114" }}>{children}</div>
-    </div>
-  );
-};
-
-// Plain mono pill, used for chips and capability tags
-const Tag = ({ children, dim, accent }) => (
-  <span
-    className="mono"
-    style={{
-      fontSize: 11,
-      letterSpacing: "0.04em",
-      padding: "4px 8px",
-      border: "1px solid var(--border-subtle)",
-      borderRadius: 4,
-      color: accent ? "var(--accent)" : dim ? "var(--fg-subtle)" : "var(--fg-muted)",
-      background: "var(--surface)",
-      whiteSpace: "nowrap",
-    }}
-  >
-    {children}
+const BrandMark = ({ size = 34 }) => (
+  <span className="brand-mark" style={{ "--mark-size": `${size}px` }}>
+    <img data-keystone-glyph="hidden-k" src={LOGO_SRC} alt="" />
   </span>
 );
 
-const SectionHeader = ({ num, eyebrow, title, lede }) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 720 }}>
-    <Eyebrow num={num}>{eyebrow}</Eyebrow>
-    <h2
-      style={{
-        fontSize: 38,
-        lineHeight: 1.1,
-        letterSpacing: "-0.02em",
-        fontWeight: 500,
-        margin: 0,
-        textWrap: "pretty",
-      }}
-    >
-      {title}
-    </h2>
-    {lede && (
-      <p style={{ fontSize: 17, lineHeight: 1.55, color: "var(--fg-muted)", margin: 0, maxWidth: 600, textWrap: "pretty" }}>
-        {lede}
-      </p>
-    )}
-  </div>
+const LogoWordmark = ({ href = "#", size = 34 }) => (
+  <a className="wordmark" href={href} aria-label="Keystone home">
+    <BrandMark size={size} />
+    <span className="wordmark-text">Keystone</span>
+  </a>
 );
 
-const Section = ({ id, children, dense, panel }) => (
-  <section
-    id={id}
-    style={{
-      borderTop: "1px solid var(--border-subtle)",
-      background: panel ? "var(--surface)" : "transparent",
-    }}
-  >
-    <div
-      style={{
-        maxWidth: 1280,
-        margin: "0 auto",
-        padding: dense ? "56px 32px" : "104px 32px",
-      }}
-    >
-      {children}
-    </div>
+const Btn = ({ children, href = "#", primary = false, icon }) => (
+  <a className={`btn${primary ? " primary" : ""}`} href={href}>
+    <span>{children}</span>
+    {icon}
+  </a>
+);
+
+const Eyebrow = ({ children }) => (
+  <div className="eyebrow mono">{children}</div>
+);
+
+const Section = ({ id, children, dark = false, blueprint = false }) => (
+  <section id={id} className={`section${dark ? " dark" : ""}${blueprint ? " blueprint" : ""}`}>
+    <div className="container">{children}</div>
   </section>
 );
 
-Object.assign(window, { Eyebrow, Btn, Nav, WindowChrome, Tag, SectionHeader, Section });
+const SectionHeader = ({ eyebrow, title, children, align = "center" }) => (
+  <div className={`section-head${align === "left" ? " left" : ""}`}>
+    <Eyebrow>{eyebrow}</Eyebrow>
+    <h2>{title}</h2>
+    {children && <p className="lede">{children}</p>}
+  </div>
+);
+
+const Nav = () => (
+  <header className="site-nav">
+    <div className="container nav-inner">
+      <LogoWordmark />
+      <nav className="nav-links" aria-label="Primary navigation">
+        <a href="#platform">Platform</a>
+        <a href="#benchmarks">Benchmarking</a>
+        <a href="#security">Security</a>
+        <a href="#docs">Documentation</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div className="nav-actions">
+        <Btn href="#docs">Docs</Btn>
+        <Btn primary href="#download">Download</Btn>
+      </div>
+    </div>
+  </header>
+);
+
+const ProductChart = () => (
+  <div className="dark-card chart" aria-label="Median latency comparison chart">
+    <svg viewBox="0 0 720 230" role="img">
+      <defs>
+        <linearGradient id="chartFade" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#2E5E91" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="#2E5E91" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[40, 80, 120, 160, 200].map((y) => (
+        <line key={y} x1="54" x2="690" y1={y} y2={y} stroke="rgba(244,247,250,.12)" />
+      ))}
+      {[120, 245, 370, 495, 620].map((x) => (
+        <line key={x} x1={x} x2={x} y1="24" y2="205" stroke="rgba(244,247,250,.08)" />
+      ))}
+      <path d="M58 178 C160 150 250 125 350 96 S560 58 680 42 L680 205 L58 205 Z" fill="url(#chartFade)" />
+      <polyline points="58,178 180,146 310,108 450,78 680,43" fill="none" stroke="#6FA0D0" strokeWidth="3" />
+      <polyline points="58,190 180,165 310,132 450,108 680,82" fill="none" stroke="#D28A15" strokeWidth="2" />
+      <polyline points="58,204 180,196 310,184 450,170 680,154" fill="none" stroke="#7ABCA3" strokeWidth="2" />
+      <text x="54" y="22" fill="#AEB9C4" fontSize="14">Median latency (ms) - key encapsulation</text>
+      <text x="612" y="222" fill="#AEB9C4" fontSize="11">4096</text>
+      <text x="52" y="222" fill="#AEB9C4" fontSize="11">256</text>
+    </svg>
+  </div>
+);
+
+const CopyChecksum = () => {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(CHECKSUM);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2400);
+    } catch (error) {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <div className="copy-panel" aria-label="Download checksum">
+      <div className="caption mono">KEYSTONE-1.0.0-WIN-X64.EXE - 142 MB</div>
+      <div className="copy-row mono">
+        <span>sha256</span>
+        <span className="hash">{CHECKSUM}</span>
+        <button className="icon-button" type="button" aria-label="Copy SHA256" onClick={copy}>
+          <IconCopy size={15} />
+        </button>
+      </div>
+      {copied && <span className="copied mono">Copied</span>}
+    </div>
+  );
+};
+
+const Footer = () => (
+  <footer className="footer" id="contact">
+    <div className="container footer-grid">
+      <div>
+        <LogoWordmark size={32} />
+        <p style={{ marginTop: 16 }}>
+          Post-quantum cryptography & benchmarking platform.
+        </p>
+        <p className="mono" style={{ marginTop: 28 }}>© 2026 Keystone Labs, Inc.</p>
+      </div>
+      <div>
+        <h3>Platform</h3>
+        <nav>
+          <a href="#platform">Overview</a>
+          <a href="#benchmarks">Benchmarks</a>
+          <a href="#schemes">Schemes</a>
+          <a href="#download">Reports</a>
+        </nav>
+      </div>
+      <div>
+        <h3>Resources</h3>
+        <nav>
+          <a id="docs" href="#">Documentation</a>
+          <a href="#">Blog</a>
+          <a href="#">Security</a>
+          <a href="#">Releases</a>
+        </nav>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <nav>
+          <a href="#">About</a>
+          <a href="#contact">Contact</a>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </nav>
+      </div>
+      <div>
+        <h3>Stay In The Loop</h3>
+        <p>Research, benchmarks, and platform updates.</p>
+        <form className="signup">
+          <input type="email" aria-label="Email address" placeholder="Email address" />
+          <button className="btn primary" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </footer>
+);
+
+Object.assign(window, {
+  BrandMark,
+  LogoWordmark,
+  Btn,
+  Eyebrow,
+  Section,
+  SectionHeader,
+  Nav,
+  ProductChart,
+  CopyChecksum,
+  Footer,
+});
