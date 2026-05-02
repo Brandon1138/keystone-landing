@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Benchmarks - Keystone</title>
+<link rel="stylesheet" href="/static-page.css" />
+</head>
+<body>
+<header class="site-nav">
+  <div class="container nav-inner">
+    <a class="wordmark" href="/" aria-label="Keystone home"><span class="brand-mark"><img data-keystone-glyph="hidden-k" src="/design-mockups/keystone_logo.png" alt="" /></span><span class="wordmark-text">Keystone</span></a>
+    <nav class="nav-actions" aria-label="Page navigation"><a href="/platform/">Platform</a><a href="/reports/">Reports</a><a href="/">Home</a></nav>
+  </div>
+</header>
+<main>
+  <section class="page-hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow mono">Measurement method</div>
+        <h1>Benchmarks</h1>
+        <p class="lede">Keystone's benchmark surface is designed for repeatable research measurement, not headline performance claims. Results depend on algorithm parameters, implementation libraries, hardware, and run context.</p>
+      </div>
+      <aside class="summary-panel"><strong>Truth boundary</strong><p>This page describes how benchmark evidence is organized. It does not publish fabricated scores or universal rankings.</p></aside>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container content-grid three">
+      <article class="card"><h2>What is measured</h2><p>Latency, throughput, memory behavior, and operation-specific timing can be collected for key generation, encapsulation, decapsulation, signing, and verification workflows.</p></article>
+      <article class="card"><h2>What is recorded</h2><p>Runs need algorithm family, parameter set, library path, platform context, and repeat count so research comparisons can be interpreted instead of treated as absolute.</p></article>
+      <article class="card"><h2>What is compared</h2><p>Classical baselines and post-quantum candidates can be reviewed side by side when the execution environment and method are kept visible.</p></article>
+      <article class="card"><h2>Adapter role</h2><p>Native boundaries for liboqs and OpenSSL keep cryptographic work outside the visual layer while preserving a clear path back to result metadata.</p></article>
+      <article class="card"><h2>Validation posture</h2><p>The useful benchmark is the one another researcher can re-run, inspect, and question. Keystone favors recorded context over marketing shorthand.</p></article>
+      <article class="card"><h2>Limitations</h2><p>Different hardware, operating systems, load conditions, and library versions can change outcomes. The prototype does not turn a single run into a universal claim.</p></article>
+    </div>
+  </section>
+</main>
+<footer class="footer-lite">
+  <div class="container footer-lite-grid">
+    <div><a class="wordmark" href="/" aria-label="Keystone home"><span class="brand-mark"><img data-keystone-glyph="hidden-k" src="/design-mockups/keystone_logo.png" alt="" /></span><span class="wordmark-text">Keystone</span></a><p>Post-quantum cryptography & benchmarking platform.</p></div>
+    <nav aria-label="Footer pages"><a href="/platform/">Platform</a><a href="/benchmarks/">Benchmarks</a><a href="/schemes/">Schemes</a><a href="/reports/">Reports</a><a href="/docs/">Docs</a><a href="/blog/">Research Notes</a><a href="/security/">Security</a><a href="/releases/">Releases</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+  </div>
+</footer>
+</body>
+</html>

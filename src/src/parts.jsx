@@ -122,41 +122,41 @@ const Footer = () => (
         <p style={{ marginTop: 16 }}>
           Post-quantum cryptography & benchmarking platform.
         </p>
-        <p className="mono" style={{ marginTop: 28 }}>© 2026 Keystone Labs, Inc.</p>
+        <p className="mono" style={{ marginTop: 28 }}>Research prototype - 2026 thesis build.</p>
       </div>
       <div>
         <h3>Platform</h3>
         <nav>
-          <a href="#platform">Overview</a>
-          <a href="#benchmarks">Benchmarks</a>
-          <a href="#schemes">Schemes</a>
-          <a href="#download">Reports</a>
+          <a href="/platform/">Overview</a>
+          <a href="/benchmarks/">Benchmarks</a>
+          <a href="/schemes/">Schemes</a>
+          <a href="/reports/">Reports</a>
         </nav>
       </div>
       <div>
         <h3>Resources</h3>
         <nav>
-          <a id="docs" href="#">Documentation</a>
-          <a href="#">Blog</a>
-          <a href="#">Security</a>
-          <a href="#">Releases</a>
+          <a id="docs" href="/docs/">Documentation</a>
+          <a href="/blog/">Blog</a>
+          <a href="/security/">Security</a>
+          <a href="/releases/">Releases</a>
         </nav>
       </div>
       <div>
         <h3>Company</h3>
         <nav>
-          <a href="#">About</a>
-          <a href="#contact">Contact</a>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
+          <a href="/about/">About</a>
+          <a href="/contact/">Contact</a>
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
         </nav>
       </div>
       <div>
         <h3>Stay In The Loop</h3>
-        <p>Research, benchmarks, and platform updates.</p>
-        <form className="signup">
-          <input type="email" aria-label="Email address" placeholder="Email address" />
-          <button className="btn primary" type="submit">Subscribe</button>
+        <p>Research, benchmarks, and platform updates. Newsletter backend not wired yet.</p>
+        <form className="signup" onSubmit={(event) => event.preventDefault()}>
+          <input type="email" aria-label="Email address" placeholder="Email address" disabled />
+          <button className="btn primary" type="submit" disabled>Subscribe</button>
         </form>
       </div>
     </div>

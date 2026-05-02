@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Schemes - Keystone</title>
+<link rel="stylesheet" href="/static-page.css" />
+</head>
+<body>
+<header class="site-nav">
+  <div class="container nav-inner">
+    <a class="wordmark" href="/" aria-label="Keystone home"><span class="brand-mark"><img data-keystone-glyph="hidden-k" src="/design-mockups/keystone_logo.png" alt="" /></span><span class="wordmark-text">Keystone</span></a>
+    <nav class="nav-actions" aria-label="Page navigation"><a href="/benchmarks/">Benchmarks</a><a href="/security/">Security</a><a href="/">Home</a></nav>
+  </div>
+</header>
+<main>
+  <section class="page-hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow mono">Algorithm families</div>
+        <h1>Schemes</h1>
+        <p class="lede">Keystone references classical, post-quantum, hybrid, and quantum-analysis families so research users can study tradeoffs across cryptographic contexts.</p>
+      </div>
+      <aside class="summary-panel"><strong>Careful scope</strong><p>Scheme support here means prototype evaluation coverage, not certification, endorsement, or operational approval.</p></aside>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container cards-grid">
+      <article class="card"><h2>Post-quantum KEMs</h2><p>ML-KEM-style key encapsulation appears in the hybrid workflow and benchmark surface as a practical post-quantum family to inspect.</p></article>
+      <article class="card"><h2>Post-quantum signatures</h2><p>ML-DSA-style signatures provide a research path for studying authenticity alongside key establishment and encryption.</p></article>
+      <article class="card"><h2>Classical baselines</h2><p>OpenSSL-backed classical operations can provide familiar comparison points when their context and limitations are recorded with each run.</p></article>
+      <article class="card"><h2>Authenticated encryption</h2><p>AES-GCM is used in the hybrid demonstration as the symmetric encryption layer after post-quantum key encapsulation.</p></article>
+      <article class="card"><h2>Quantum algorithms</h2><p>Shor and Grover demonstrations support resource estimation and backend inspection, helping explain quantum pressure on cryptographic assumptions.</p></article>
+      <article class="card"><h2>Adapter-backed coverage</h2><p>liboqs and OpenSSL integrations are implementation paths for research measurement, with coverage constrained by the libraries and parameters actually wired.</p></article>
+    </div>
+  </section>
+</main>
+<footer class="footer-lite">
+  <div class="container footer-lite-grid">
+    <div><a class="wordmark" href="/" aria-label="Keystone home"><span class="brand-mark"><img data-keystone-glyph="hidden-k" src="/design-mockups/keystone_logo.png" alt="" /></span><span class="wordmark-text">Keystone</span></a><p>Post-quantum cryptography & benchmarking platform.</p></div>
+    <nav aria-label="Footer pages"><a href="/platform/">Platform</a><a href="/benchmarks/">Benchmarks</a><a href="/schemes/">Schemes</a><a href="/reports/">Reports</a><a href="/docs/">Docs</a><a href="/blog/">Research Notes</a><a href="/security/">Security</a><a href="/releases/">Releases</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+  </div>
+</footer>
+</body>
+</html>

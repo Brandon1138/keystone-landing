@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Platform Overview - Keystone</title>
+<link rel="stylesheet" href="/static-page.css" />
+</head>
+<body>
+<header class="site-nav">
+  <div class="container nav-inner">
+    <a class="wordmark" href="/" aria-label="Keystone home"><span class="brand-mark"><img data-keystone-glyph="hidden-k" src="/design-mockups/keystone_logo.png" alt="" /></span><span class="wordmark-text">Keystone</span></a>
+    <nav class="nav-actions" aria-label="Page navigation"><a href="/docs/">Docs</a><a href="/benchmarks/">Benchmarks</a><a href="/">Home</a></nav>
+  </div>
+</header>
+<main>
+  <section class="page-hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow mono">Prototype architecture</div>
+        <h1>Platform Overview</h1>
+        <p class="lede">Keystone is a research prototype for post-quantum cryptography evaluation: benchmark execution, quantum resource analysis, hybrid cryptography, and evidence reporting in one inspection-oriented workflow.</p>
+      </div>
+      <aside class="summary-panel"><strong>Model</strong><p>Interface, application, domain, and infrastructure layers keep research workflows separate from native cryptographic adapters and external quantum services.</p></aside>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container cards-grid">
+      <article class="card"><h2>Benchmark workflow</h2><p>Run controlled measurements for selected classical and post-quantum schemes, recording algorithm choices, parameters, timing, throughput, and execution context.</p></article>
+      <article class="card"><h2>Quantum workflow</h2><p>Estimate and inspect resources for Shor and Grover demonstrations, including circuit depth, gate counts, backend behavior, and confidence context.</p></article>
+      <article class="card"><h2>Hybrid workflow</h2><p>Demonstrate how ML-KEM, AES-GCM, and ML-DSA can be composed for key encapsulation, authenticated encryption, and signatures in a research setting.</p></article>
+      <article class="card"><h2>Review workflow</h2><p>Collect result summaries that help researchers compare runs without treating one static landing page as a full product documentation portal.</p></article>
+    </div>
+  </section>
+  <section class="section dark">
+    <div class="container content-grid">
+      <article class="card"><h2>Layered system</h2><ul><li>Interface layer for user-facing research workflows.</li><li>Application layer for orchestration and result flow.</li><li>Domain layer for algorithm families, parameters, and measurement models.</li><li>Infrastructure layer for adapters, persistence, and external providers.</li></ul></article>
+      <article class="card"><h2>Integration boundaries</h2><ul><li>liboqs and OpenSSL provide cryptographic implementation surfaces.</li><li>Qiskit and IBM Quantum support quantum circuit execution paths.</li><li>Native adapters remain boundaries, not claims of deployment hardening.</li><li>The public site remains static and does not expose the prototype backend.</li></ul></article>
+    </div>
+  </section>
+</main>
+<footer class="footer-lite">
+  <div class="container footer-lite-grid">
+    <div><a class="wordmark" href="/" aria-label="Keystone home"><span class="brand-mark"><img data-keystone-glyph="hidden-k" src="/design-mockups/keystone_logo.png" alt="" /></span><span class="wordmark-text">Keystone</span></a><p>Post-quantum cryptography & benchmarking platform.</p></div>
+    <nav aria-label="Footer pages"><a href="/platform/">Platform</a><a href="/benchmarks/">Benchmarks</a><a href="/schemes/">Schemes</a><a href="/reports/">Reports</a><a href="/docs/">Docs</a><a href="/blog/">Research Notes</a><a href="/security/">Security</a><a href="/releases/">Releases</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+  </div>
+</footer>
+</body>
+</html>
