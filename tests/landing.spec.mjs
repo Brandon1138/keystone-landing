@@ -174,6 +174,16 @@ test.describe("Landing — Download", () => {
   });
 });
 
+test.describe("Landing — responsive", () => {
+  test("no horizontal overflow at any breakpoint", async ({ page }) => {
+    await page.goto("/");
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
 test("trust pillars section renders 5 cards", async ({ page }) => {
   await page.goto("/");
   const section = page.locator("#trust");
