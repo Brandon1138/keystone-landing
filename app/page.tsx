@@ -1,10 +1,13 @@
 import { Nav } from "@/components/landing/Nav";
+import { Hero } from "@/components/landing/Hero";
 
 export default function Page() {
   return (
     <>
       <Nav />
-      <main className="min-h-[60vh]" />
+      <main>
+        <Hero />
+      </main>
     </>
   );
 }
