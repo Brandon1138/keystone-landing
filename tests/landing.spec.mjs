@@ -135,3 +135,19 @@ test.describe("Landing — Features", () => {
     }
   });
 });
+
+test.describe("Landing — Comparison", () => {
+  test("renders 4 grouped comparison charts with PQC + Classical bars", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("#comparison");
+    await expect(section).toBeVisible();
+    await expect(section.locator("[data-testid=comparison-chart]")).toHaveCount(4);
+    for (const label of ["Security Level", "Throughput", "Median Latency", "Artifact Size"]) {
+      await expect(section.getByText(label)).toBeVisible();
+    }
+    await expect(section.getByText("Post-Quantum", { exact: true })).toBeVisible();
+    await expect(section.getByText("Classical", { exact: true })).toBeVisible();
+    await expect(section.getByText(/Higher is better/i).first()).toBeVisible();
+    await expect(section.getByText(/Lower is better/i).first()).toBeVisible();
+  });
+});
