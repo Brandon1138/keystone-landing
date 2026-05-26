@@ -39,3 +39,24 @@ test.describe("Landing — Hero", () => {
     }
   });
 });
+
+test.describe("Landing — Mockup chrome", () => {
+  test.beforeEach(async ({ page }) => { await page.goto("/"); });
+
+  test("renders macOS window chrome with three dots and title", async ({ page }) => {
+    const win = page.getByTestId("mockup-window");
+    await expect(win).toBeVisible();
+    await expect(win.getByTestId("traffic-lights").locator("span")).toHaveCount(3);
+    await expect(win.getByText("Keystone", { exact: true }).first()).toBeVisible();
+    await expect(win.getByRole("button", { name: /Run Benchmark/i })).toBeVisible();
+  });
+
+  test("sidebar lists all 8 navigation items", async ({ page }) => {
+    const sidebar = page.getByTestId("mockup-sidebar");
+    for (const label of ["Overview", "Benchmarks", "Schemes", "Runtimes", "Workflows", "Results", "Reports", "Settings"]) {
+      await expect(sidebar.getByText(label, { exact: true })).toBeVisible();
+    }
+    await expect(sidebar.getByText("Default Lab")).toBeVisible();
+    await expect(sidebar.getByText(/Apple M2 Pro/)).toBeVisible();
+  });
+});
