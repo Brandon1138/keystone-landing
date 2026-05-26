@@ -3,6 +3,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Mockup } from "@/components/landing/app-mockup/Mockup";
 import { Features } from "@/components/landing/Features";
 import { ClassicalVsPqc } from "@/components/landing/ClassicalVsPqc";
+import { TrustPillars } from "@/components/landing/TrustPillars";
 
 export default function Page() {
   return (
@@ -12,6 +13,7 @@ export default function Page() {
         <Hero mockup={<Mockup />} />
         <Features />
         <ClassicalVsPqc />
+        <TrustPillars />
       </main>
     </>
   );

@@ -34,8 +34,9 @@ test.describe("Landing — Hero", () => {
   });
 
   test("renders three inline trust pillars under the CTAs", async ({ page }) => {
+    const hero = page.locator("#platform");
     for (const label of ["Open Source", "Reproducible", "Built for Engineers"]) {
-      await expect(page.getByText(label, { exact: false })).toBeVisible();
+      await expect(hero.getByText(label, { exact: true })).toBeVisible();
     }
   });
 });
@@ -134,6 +135,16 @@ test.describe("Landing — Features", () => {
       await expect(section.getByText(title)).toBeVisible();
     }
   });
+});
+
+test("trust pillars section renders 5 cards", async ({ page }) => {
+  await page.goto("/");
+  const section = page.locator("#trust");
+  await expect(section).toBeVisible();
+  await expect(section.locator("[data-testid=trust-card]")).toHaveCount(5);
+  for (const title of ["Open & Auditable", "Reproducible Runs", "Secure by Default", "Modular Architecture", "Data Privacy"]) {
+    await expect(section.getByText(title)).toBeVisible();
+  }
 });
 
 test.describe("Landing — Comparison", () => {
