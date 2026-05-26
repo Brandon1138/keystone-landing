@@ -2,3 +2,7 @@ node_modules/
 .vite/
 dist/
 .superpowers/
+.next/
+out/
+*.tsbuildinfo
+.env*.local
