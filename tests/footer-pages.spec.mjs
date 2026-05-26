@@ -19,29 +19,15 @@ const newFooterPages = footerPages.filter(({ path }) =>
   ["/platform/", "/benchmarks/", "/schemes/", "/reports/", "/contact/"].includes(path),
 );
 
-test("footer placeholder links resolve to real static pages", async ({ page, request }) => {
-  await page.goto("/");
+// Tests that assert behavior on the landing page (/) live in
+// tests/landing.spec.mjs. This file is scoped to the static sub-pages
+// reachable from the landing's footer.
 
-  const footer = page.locator("footer");
-
-  for (const { label, path } of footerPages) {
-    const link = footer.getByRole("link", { name: label }).first();
-    await expect(link).toHaveAttribute("href", path);
-
+test("all footer-linked sub-pages return 200", async ({ request }) => {
+  for (const { path } of footerPages) {
     const response = await request.get(path);
-    expect(response.status(), `${path} should be served directly`).toBe(200);
+    expect(response.status(), `${path} should respond 200`).toBe(200);
   }
-});
-
-test("landing newsletter is explicitly unwired and disabled", async ({ page }) => {
-  await page.goto("/");
-
-  const footer = page.locator("footer");
-  await expect(footer.getByText("Newsletter backend not wired yet.")).toBeVisible();
-  await expect(footer.getByLabel("Email address")).toBeDisabled();
-  await expect(footer.getByRole("button", { name: "Subscribe" })).toBeDisabled();
-  await expect(footer).not.toContainText("Keystone Labs, Inc.");
-  await expect(footer).toContainText("Research prototype - 2026 thesis build.");
 });
 
 for (const { path, heading } of footerPages) {

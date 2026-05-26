@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surface */
+  --color-background: #0A0F1A;
+  --color-surface: #0F1626;
+  --color-surface-2: #141C2E;
+  --color-surface-3: #1A2238;
+
+  /* Border */
+  --color-border: #1E293B;
+  --color-border-strong: #2A3548;
+
+  /* Foreground */
+  --color-foreground: #E5E7EB;
+  --color-foreground-muted: #94A3B8;
+  --color-foreground-subtle: #64748B;
+
+  /* Accent — primary teal */
+  --color-primary: #14B8A6;
+  --color-primary-light: #2DD4BF;
+  --color-primary-glow: #0D9488;
+
+  /* Accent — secondary violet */
+  --color-secondary: #A78BFA;
+  --color-secondary-light: #C4B5FD;
+
+  /* Semantic */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* Type */
+  --font-sans: var(--font-plex-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Spacing */
+  --container-max: 1248px;
+}
+
+html, body { margin: 0; padding: 0; }
+html { background: var(--color-background); color-scheme: dark; }
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+/* Gradient text utility for hero accent word */
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Hero load reveal stagger */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal > * { animation: rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.reveal > *:nth-child(1) { animation-delay: 0.05s; }
+.reveal > *:nth-child(2) { animation-delay: 0.18s; }
+.reveal > *:nth-child(3) { animation-delay: 0.32s; }
+.reveal > *:nth-child(4) { animation-delay: 0.46s; }
+.reveal > *:nth-child(5) { animation-delay: 0.60s; }
+
+/* Ambient hero glow */
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.85; }
+}
+.glow-breathe { animation: breathe 8s ease-in-out infinite; }
+
+/* Container helper */
+.container-page {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(20px, 4vw, 48px);
+  padding-right: clamp(20px, 4vw, 48px);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal > * { animation: none; }
+  .glow-breathe { animation: none; }
+}
