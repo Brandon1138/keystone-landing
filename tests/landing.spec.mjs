@@ -137,6 +137,28 @@ test.describe("Landing — Features", () => {
   });
 });
 
+test.describe("Landing — Download", () => {
+  test("renders 3 platform cards; only Windows is enabled", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("#download");
+    await expect(section).toBeVisible();
+    await expect(section.locator("[data-testid=download-card]")).toHaveCount(3);
+
+    await expect(section.getByText("macOS")).toBeVisible();
+    await expect(section.getByText("Windows", { exact: true })).toBeVisible();
+    await expect(section.getByText("Linux")).toBeVisible();
+
+    const macBtn = section.getByRole("button", { name: /Download \.dmg/i });
+    await expect(macBtn).toBeDisabled();
+    const winBtn = section.getByRole("link", { name: /Download \.exe/i });
+    await expect(winBtn).toBeVisible();
+    const linuxBtn = section.getByRole("button", { name: /Download \.AppImage/i });
+    await expect(linuxBtn).toBeDisabled();
+
+    await expect(section.getByText(/Coming soon/i).first()).toBeVisible();
+  });
+});
+
 test("trust pillars section renders 5 cards", async ({ page }) => {
   await page.goto("/");
   const section = page.locator("#trust");
