@@ -5,6 +5,7 @@ import { Features } from "@/components/landing/Features";
 import { ClassicalVsPqc } from "@/components/landing/ClassicalVsPqc";
 import { TrustPillars } from "@/components/landing/TrustPillars";
 import { Download } from "@/components/landing/Download";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Page() {
   return (
@@ -17,6 +18,7 @@ export default function Page() {
         <TrustPillars />
         <Download />
       </main>
+      <Footer />
     </>
   );
 }

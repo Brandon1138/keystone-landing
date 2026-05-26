@@ -137,6 +137,21 @@ test.describe("Landing — Features", () => {
   });
 });
 
+test.describe("Landing — Footer", () => {
+  test("renders 6 column groups and bottom bar", async ({ page }) => {
+    await page.goto("/");
+    const footer = page.getByRole("contentinfo");
+    await expect(footer).toBeVisible();
+    for (const heading of ["Product", "Resources", "Community", "Company", "Stay in the loop"]) {
+      await expect(footer.getByText(heading, { exact: true })).toBeVisible();
+    }
+    await expect(footer.getByRole("textbox", { name: /email/i })).toBeVisible();
+    await expect(footer.getByText(/© 2026 Keystone Labs Inc\./i)).toBeVisible();
+    await expect(footer.getByRole("link", { name: /Terms of Use/i })).toHaveAttribute("href", /^\/terms\/?$/);
+    await expect(footer.getByRole("link", { name: /Privacy Policy/i })).toHaveAttribute("href", /^\/privacy\/?$/);
+  });
+});
+
 test.describe("Landing — Download", () => {
   test("renders 3 platform cards; only Windows is enabled", async ({ page }) => {
     await page.goto("/");
