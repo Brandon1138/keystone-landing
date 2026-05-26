@@ -60,3 +60,60 @@ test.describe("Landing — Mockup chrome", () => {
     await expect(sidebar.getByText(/Apple M2 Pro/)).toBeVisible();
   });
 });
+
+test.describe("Mockup — dashboard pieces", () => {
+  test.beforeEach(async ({ page }) => { await page.goto("/"); });
+
+  test("renders 4 metric cards with values from mockData", async ({ page }) => {
+    const strip = page.getByTestId("mockup-metrics");
+    await expect(strip.locator("[data-testid=metric-card]")).toHaveCount(4);
+    await expect(strip.getByText("1,248")).toBeVisible();
+    await expect(strip.getByText("2.34M")).toBeVisible();
+    await expect(strip.getByText("0.42 ms")).toBeVisible();
+    await expect(strip.getByText("99.8%")).toBeVisible();
+  });
+
+  test("ops bar chart renders 7 bars with scheme labels", async ({ page }) => {
+    const chart = page.getByTestId("mockup-ops-chart");
+    await expect(chart.locator("[data-testid=ops-bar]")).toHaveCount(7);
+    await expect(chart.getByText("ML-KEM")).toBeVisible();
+    await expect(chart.getByText("AES-GCM")).toBeVisible();
+    await expect(chart.getByText("3.21M")).toBeVisible();
+  });
+
+  test("latency gauge renders SVG with value and p50/p95/p99 labels", async ({ page }) => {
+    const gauge = page.getByTestId("mockup-gauge");
+    await expect(gauge.locator("svg")).toBeVisible();
+    await expect(gauge.getByText("0.42", { exact: true })).toBeVisible();
+    await expect(gauge.getByText("P50")).toBeVisible();
+    await expect(gauge.getByText("P95")).toBeVisible();
+    await expect(gauge.getByText("P99")).toBeVisible();
+  });
+
+  test("latency line chart renders 4 series and time labels", async ({ page }) => {
+    const chart = page.getByTestId("mockup-line-chart");
+    await expect(chart.locator("svg")).toBeVisible();
+    await expect(chart.locator("svg polyline")).toHaveCount(4);
+    await expect(chart.getByText("-60s")).toBeVisible();
+    await expect(chart.getByText("Now")).toBeVisible();
+    for (const label of ["ML-KEM", "ML-DSA", "Falcon", "SPHINCS+"]) {
+      await expect(chart.getByText(label, { exact: true })).toBeVisible();
+    }
+  });
+
+  test("throughput histogram renders 21 bars", async ({ page }) => {
+    const chart = page.getByTestId("mockup-histogram");
+    await expect(chart.locator("[data-testid=histogram-bar]")).toHaveCount(21);
+    await expect(chart.getByText("10k")).toBeVisible();
+    await expect(chart.getByText("100M")).toBeVisible();
+  });
+
+  test("scheme table renders 7 rows and footer caption", async ({ page }) => {
+    const table = page.getByTestId("mockup-scheme-table");
+    await expect(table.locator("tbody tr")).toHaveCount(7);
+    await expect(table.getByText("ML-KEM (768)")).toBeVisible();
+    await expect(table.getByText("AES-GCM (256)")).toBeVisible();
+    await expect(page.getByText(/Completed 32 runs/)).toBeVisible();
+    await expect(page.getByText(/Last run/)).toBeVisible();
+  });
+});
