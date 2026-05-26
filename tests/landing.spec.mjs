@@ -117,3 +117,21 @@ test.describe("Mockup — dashboard pieces", () => {
     await expect(page.getByText(/Last run/)).toBeVisible();
   });
 });
+
+test.describe("Landing — Features", () => {
+  test("renders 5 feature cards", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("#features");
+    await expect(section).toBeVisible();
+    await expect(section.locator("[data-testid=feature-card]")).toHaveCount(5);
+    for (const title of [
+      "Real-time benchmarking",
+      "Visual analytics",
+      "Hybrid workflows",
+      "Desktop workbench",
+      "Cross-platform",
+    ]) {
+      await expect(section.getByText(title)).toBeVisible();
+    }
+  });
+});
