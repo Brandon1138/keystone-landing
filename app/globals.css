@@ -16,9 +16,9 @@
   --color-secondary: oklch(0.61 0.18 55);
   --color-secondary-light: oklch(0.77 0.12 62);
   --color-success: oklch(0.62 0.16 154);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
   --font-mono: "SF Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, monospace;
-  --container-max: 1760px;
+  --container-max: 1320px;
 }
 
 :root {
@@ -47,7 +47,10 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+  letter-spacing: -0.006em;
 }
 
 a {
@@ -62,6 +65,12 @@ input {
 
 button {
   border: 0;
+}
+
+:where(a, button, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 svg {
@@ -88,7 +97,8 @@ svg {
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--color-surface) 82%, transparent),
     0 18px 56px color-mix(in oklab, var(--color-foreground) 10%, transparent);
-  backdrop-filter: blur(22px) saturate(1.18);
+  -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  backdrop-filter: blur(26px) saturate(1.5);
 }
 
 .liquid-material-enhancement {
@@ -110,7 +120,7 @@ svg {
 }
 
 .nav-material {
-  width: min(calc(100% - 48px), 1760px);
+  width: min(calc(100% - 48px), 1320px);
   margin-inline: auto;
   pointer-events: auto;
 }
@@ -189,6 +199,162 @@ svg {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--color-surface) 68%, transparent);
+  color: var(--color-foreground);
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 180ms ease-out;
+}
+
+.nav-toggle:hover {
+  background: color-mix(in oklab, var(--color-surface) 84%, transparent);
+}
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+}
+
+.mobile-menu[data-open="true"] {
+  display: block;
+}
+
+.mobile-menu-scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: color-mix(in oklab, var(--color-foreground) 26%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation: menu-fade 200ms ease-out;
+}
+
+.mobile-menu-panel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  left: 14px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid color-mix(in oklab, var(--color-surface) 60%, var(--color-border));
+  border-radius: 24px;
+  background: color-mix(in oklab, var(--color-surface) 92%, transparent);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  backdrop-filter: blur(28px) saturate(1.5);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 90%, transparent),
+    var(--shadow-window);
+  padding: 14px;
+  animation: menu-rise 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mobile-menu-panel ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mobile-menu-panel ul a {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  border-radius: 13px;
+  padding: 0 14px;
+  color: var(--color-foreground);
+  font-size: 17px;
+  font-weight: 560;
+}
+
+.mobile-menu-panel ul a:hover {
+  background: color-mix(in oklab, var(--color-surface-2) 60%, transparent);
+}
+
+.mobile-menu-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+}
+
+.mobile-menu-secondary,
+.mobile-menu-primary {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 620;
+}
+
+.mobile-menu-secondary {
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--color-surface) 66%, transparent);
+  color: var(--color-foreground);
+}
+
+.mobile-menu-primary {
+  border: 1px solid color-mix(in oklab, var(--color-primary) 82%, var(--color-border));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--color-primary-light) 60%, var(--color-primary)), var(--color-primary));
+  color: oklch(0.99 0.004 247);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, oklch(0.99 0.004 247) 35%, transparent),
+    0 12px 26px color-mix(in oklab, var(--color-primary) 26%, transparent);
+}
+
+@keyframes menu-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes menu-rise {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 1041px) {
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1040px) {
+  .nav-toggle {
+    display: inline-grid;
+  }
+
+  .icon-link {
+    display: none;
+  }
 }
 
 .icon-link,
@@ -321,6 +487,7 @@ svg {
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--color-surface) 80%, transparent),
     0 12px 30px color-mix(in oklab, var(--color-foreground) 7%, transparent);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 
@@ -330,7 +497,7 @@ svg {
   color: var(--color-foreground);
   font-size: clamp(54px, 5vw, 76px);
   font-weight: 740;
-  letter-spacing: 0;
+  letter-spacing: -0.022em;
   line-height: 1.05;
 }
 
@@ -369,6 +536,7 @@ svg {
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--color-surface) 82%, transparent),
     0 12px 26px color-mix(in oklab, var(--color-foreground) 8%, transparent);
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
 
@@ -404,13 +572,14 @@ svg {
 .app-window,
 .ghost-window {
   border: 1px solid color-mix(in oklab, var(--color-surface) 52%, var(--color-border));
-  border-radius: 20px;
+  border-radius: 24px;
   background:
     linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 72%, transparent), color-mix(in oklab, var(--color-surface-2) 45%, transparent)),
     color-mix(in oklab, var(--color-surface) 78%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--color-surface) 80%, transparent),
     var(--shadow-window);
+  -webkit-backdrop-filter: blur(28px) saturate(1.14);
   backdrop-filter: blur(28px) saturate(1.14);
 }
 
@@ -1020,7 +1189,7 @@ svg {
   color: var(--color-foreground);
   font-size: clamp(38px, 4.4vw, 66px);
   font-weight: 720;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
   line-height: 1.04;
 }
 
@@ -1446,7 +1615,7 @@ svg {
   }
 
   .nav-material {
-    width: min(calc(100% - 28px), 1760px);
+    width: min(calc(100% - 28px), 1320px);
   }
 
   .header-inner {
@@ -1653,5 +1822,19 @@ svg {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nav-material,
+  .liquid-material,
+  .platform-pill,
+  .secondary-action,
+  .app-window,
+  .ghost-window,
+  .status-badge {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--color-surface);
   }
 }

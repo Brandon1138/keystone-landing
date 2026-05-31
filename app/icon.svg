@@ -1,0 +1,8 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Keystone">
+  <rect width="64" height="64" rx="14" fill="#0f1830" />
+  <g transform="translate(14.4 10) scale(0.55)">
+    <path d="M8 4h18v72H8V4Z" fill="#ffffff" />
+    <path d="M38 4h18v20L31 49l25 27H38L17 54l21-22V4Z" fill="#ffffff" />
+    <path d="M31 50 56 25v16L43 54l13 14v8L31 50Z" fill="#3b6ef6" />
+  </g>
+</svg>
