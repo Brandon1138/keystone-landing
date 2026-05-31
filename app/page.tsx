@@ -6,7 +6,6 @@ import {
   ChevronDown,
   CircleDot,
   Cpu,
-  Download,
   ExternalLink,
   FileCheck2,
   FileJson,
@@ -26,6 +25,7 @@ import type { LucideIcon } from "lucide-react";
 import { LiquidGlassMaterial } from "@/components/landing/LiquidGlassMaterial";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { AppleLogo, WindowsLogo, TuxLogo } from "@/components/landing/BrandLogos";
+import { SmartDownloadButton } from "@/components/landing/SmartDownloadButton";
 
 const GITHUB_URL = "https://github.com/Brandon1138/keystone";
 
@@ -396,10 +396,7 @@ export default function Page() {
               <Link className="icon-link" href={GITHUB_URL} aria-label="GitHub">
                 <Github className="h-4 w-4" />
               </Link>
-              <Link className="download-link" href="#download">
-                <Download className="h-4 w-4" />
-                <span>Download for macOS</span>
-              </Link>
+              <SmartDownloadButton className="download-link" githubUrl={GITHUB_URL} showSpan />
               <MobileNav links={NAV_LINKS} githubUrl={GITHUB_URL} />
             </div>
           </div>
@@ -423,10 +420,7 @@ export default function Page() {
                 post-quantum and classical cryptographic algorithms with reproducible local evidence.
               </p>
               <div className="hero-actions">
-                <Link className="primary-action" href="#download">
-                  <Download className="h-4 w-4" />
-                  Download for macOS
-                </Link>
+                <SmartDownloadButton className="primary-action" githubUrl={GITHUB_URL} />
                 <Link className="secondary-action" href="/reports/">
                   View evidence
                   <ArrowRight className="h-4 w-4" />

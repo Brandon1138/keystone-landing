@@ -23,7 +23,7 @@ test.describe("Landing — Nav", () => {
     }
 
     await expect(nav.locator('a[aria-label="GitHub"]')).toHaveAttribute("href", githubUrl);
-    await expect(nav.locator(".download-link")).toHaveAttribute("href", "#download");
+    await expect(nav.locator(".download-link")).toHaveAttribute("href", /^(#download|https:\/\/github\.com\/.*)$/);
   });
 });
 
@@ -38,7 +38,7 @@ test.describe("Landing — Hero", () => {
     await expect(h1).toContainText("built for Mac");
     await expect(page.getByText("Built for Mac", { exact: true })).toBeVisible();
 
-    await expect(page.getByRole("link", { name: /Download for macOS/i }).first()).toHaveAttribute("href", "#download");
+    await expect(page.getByRole("link", { name: /^Download$/i }).first()).toHaveAttribute("href", /^(#download|https:\/\/github\.com\/.*)$/);
     await expect(page.getByRole("link", { name: /View evidence/i })).toHaveAttribute("href", /^\/reports\/?$/);
 
     for (const label of ["macOS first", "Local benchmark runs", "Windows and Linux planned"]) {
@@ -175,7 +175,7 @@ test.describe("Landing — Mobile nav", () => {
     const menu = page.getByRole("navigation", { name: "Mobile" });
     await expect(menu).toBeVisible();
     await expect(menu.getByRole("link", { name: "Benchmarks" })).toHaveAttribute("href", "#benchmarks");
-    await expect(menu.getByRole("link", { name: /Download for macOS/i })).toHaveAttribute("href", "#download");
+    await expect(menu.getByRole("link", { name: /^Download$/i })).toHaveAttribute("href", /^(#download|https:\/\/github\.com\/.*)$/);
 
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();

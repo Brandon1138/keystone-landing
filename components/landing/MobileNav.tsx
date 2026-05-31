@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Download, Github, Menu, X } from "lucide-react";
+import { Github, Menu, X } from "lucide-react";
+import { SmartDownloadButton } from "./SmartDownloadButton";
 
 type NavLink = { label: string; href: string };
 
@@ -62,10 +63,11 @@ export function MobileNav({
             <Github className="h-4 w-4" aria-hidden />
             View source
           </Link>
-          <Link href="#download" className="mobile-menu-primary" onClick={() => setOpen(false)}>
-            <Download className="h-4 w-4" aria-hidden />
-            Download for macOS
-          </Link>
+          <SmartDownloadButton
+            className="mobile-menu-primary"
+            githubUrl={githubUrl}
+            onClick={() => setOpen(false)}
+          />
         </div>
       </nav>
     </div>
