@@ -26,6 +26,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { LiquidGlassMaterial } from "@/components/landing/LiquidGlassMaterial";
+import { MobileNav } from "@/components/landing/MobileNav";
 
 const GITHUB_URL = "https://github.com/Brandon1138/keystone";
 
@@ -151,7 +152,7 @@ function BrandLink() {
 
 function ToolbarButton({ Icon, label }: { Icon: LucideIcon; label: string }) {
   return (
-    <button type="button" className="toolbar-button" aria-label={label}>
+    <button type="button" className="toolbar-button" aria-label={label} tabIndex={-1}>
       <Icon className="h-3.5 w-3.5" />
     </button>
   );
@@ -221,7 +222,7 @@ function BenchmarkPanel() {
           Iterations
           <span>10,000</span>
         </label>
-        <button type="button">
+        <button type="button" tabIndex={-1}>
           <Play className="h-3.5 w-3.5" />
           Run Benchmark
         </button>
@@ -311,7 +312,7 @@ function KeystoneWindow() {
             <ToolbarButton Icon={FileCheck2} label="Reports" />
             <ToolbarButton Icon={RefreshCw} label="Refresh" />
             <ToolbarButton Icon={Search} label="Search" />
-            <button type="button" className="toolbar-menu" aria-label="View options">
+            <button type="button" className="toolbar-menu" aria-label="View options" tabIndex={-1}>
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -400,6 +401,7 @@ export default function Page() {
                 <Download className="h-4 w-4" />
                 <span>Download for macOS</span>
               </Link>
+              <MobileNav links={NAV_LINKS} githubUrl={GITHUB_URL} />
             </div>
           </div>
         </LiquidGlassMaterial>
@@ -457,9 +459,8 @@ export default function Page() {
               <span>Release evidence</span>
               <h2>Designed around the proof a cryptography tool has to carry.</h2>
               <p>
-                The web page borrows the future macOS surface Keystone is moving toward, but the
-                content remains grounded in real workflows: benchmark phases, visualization, workload
-                scheduling, and exports.
+                Every surface maps to a real workflow — benchmark phases, visualization, workload
+                scheduling, and exports. Nothing decorative, nothing you can’t reproduce locally.
               </p>
             </div>
             <div className="proof-list">
@@ -611,8 +612,8 @@ export default function Page() {
             </div>
           ))}
           <div className="footer-release">
-            <h3>Current pass</h3>
-            <p>macOS-first landing page. The desktop app visual pass is still ahead.</p>
+            <h3>Status</h3>
+            <p>macOS build ships today. Windows and Linux follow once native packages clear their gates.</p>
           </div>
         </div>
         <div className="container-page footer-bottom">

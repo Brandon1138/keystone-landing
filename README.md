@@ -7,7 +7,7 @@ The marketing landing for Keystone, a desktop workbench for benchmarking classic
 - Next.js 15 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4 (CSS-first `@theme` tokens in [`app/globals.css`](app/globals.css))
 - Shadcn-style primitives (Button, Card) under [`components/ui/`](components/ui)
-- IBM Plex Sans / Plex Mono via `next/font`
+- System San Francisco / `system-ui` font stack (no web-font download; native on macOS, iOS, Safari)
 - Lucide icons
 - Playwright for end-to-end tests
 
@@ -37,4 +37,4 @@ npm run dev
 
 ## Deploy
 
-Vercel auto-detects Next.js and uses the correct preset. No `vercel.json` is needed.
+Vercel auto-detects Next.js and applies the correct preset. A minimal `vercel.json` pins the framework explicitly.

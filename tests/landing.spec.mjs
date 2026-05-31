@@ -130,7 +130,7 @@ test.describe("Landing — Footer", () => {
     const footer = page.getByRole("contentinfo");
     await expect(footer).toBeVisible();
 
-    for (const heading of ["Product", "Resources", "Source", "Current pass"]) {
+    for (const heading of ["Product", "Resources", "Source", "Status"]) {
       await expect(footer.getByText(heading, { exact: true })).toBeVisible();
     }
 
@@ -138,7 +138,7 @@ test.describe("Landing — Footer", () => {
     await expect(footer.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", githubUrl);
     await expect(footer.getByRole("link", { name: /Terms of Use/i })).toHaveAttribute("href", /^\/terms\/?$/);
     await expect(footer.getByRole("link", { name: /Privacy Policy/i })).toHaveAttribute("href", /^\/privacy\/?$/);
-    await expect(footer.getByText("The desktop app visual pass is still ahead.")).toBeVisible();
+    await expect(footer.getByText(/macOS build ships today/i)).toBeVisible();
   });
 });
 
@@ -155,4 +155,29 @@ test.describe("Landing — responsive", () => {
       expect(overflow).toBeLessThanOrEqual(1);
     });
   }
+});
+
+test.describe("Landing — Mobile nav", () => {
+  test("exposes section links through an accessible toggle on narrow viewports", async ({ page }) => {
+    await page.goto("/");
+    const toggle = page.getByRole("button", { name: /open menu/i });
+    const wide = (page.viewportSize()?.width ?? 0) > 1040;
+
+    if (wide) {
+      await expect(toggle).toBeHidden();
+      return;
+    }
+
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await toggle.click();
+
+    const menu = page.getByRole("navigation", { name: "Mobile" });
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole("link", { name: "Benchmarks" })).toHaveAttribute("href", "#benchmarks");
+    await expect(menu.getByRole("link", { name: /Download for macOS/i })).toHaveAttribute("href", "#download");
+
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+  });
 });
