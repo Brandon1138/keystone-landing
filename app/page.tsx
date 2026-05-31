@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  Apple,
   ArrowRight,
   BarChart3,
   CheckCircle2,
@@ -16,7 +15,6 @@ import {
   HardDrive,
   KeyRound,
   Layers3,
-  Monitor,
   Play,
   RefreshCw,
   Search,
@@ -27,6 +25,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { LiquidGlassMaterial } from "@/components/landing/LiquidGlassMaterial";
 import { MobileNav } from "@/components/landing/MobileNav";
+import { AppleLogo, WindowsLogo, TuxLogo } from "@/components/landing/BrandLogos";
 
 const GITHUB_URL = "https://github.com/Brandon1138/keystone";
 
@@ -413,7 +412,7 @@ export default function Page() {
           <div className="container-page hero-grid">
             <div className="hero-copy">
               <div className="platform-pill">
-                <Apple className="h-4 w-4" />
+                <AppleLogo className="h-4 w-4" />
                 Built for Mac
               </div>
               <h1>
@@ -554,7 +553,7 @@ export default function Page() {
             </div>
             <div className="download-panel">
               <article data-testid="download-card" className="download-card available">
-                <Apple className="h-6 w-6" />
+                <AppleLogo className="h-6 w-6" />
                 <div>
                   <h3>macOS</h3>
                   <p>Apple Silicon and Intel, DMG release path.</p>
@@ -565,7 +564,7 @@ export default function Page() {
                 </Link>
               </article>
               <article data-testid="download-card" className="download-card pending">
-                <Monitor className="h-6 w-6" />
+                <WindowsLogo className="h-6 w-6" />
                 <div>
                   <h3>Windows</h3>
                   <p>NSIS package target, validation pending.</p>
@@ -575,7 +574,7 @@ export default function Page() {
                 </button>
               </article>
               <article data-testid="download-card" className="download-card pending">
-                <HardDrive className="h-6 w-6" />
+                <TuxLogo className="h-6 w-6" />
                 <div>
                   <h3>Linux</h3>
                   <p>AppImage target, distro validation pending.</p>
