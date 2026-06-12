@@ -1,13 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-const githubUrl = "https://github.com/Brandon1138/keystone";
-
 test.describe("Landing — Nav", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  test("renders the macOS-style header, primary links, GitHub, and download action", async ({ page }) => {
+  test("renders the macOS-style header, primary links, and gated download state", async ({ page }) => {
     const nav = page.getByRole("banner");
     await expect(nav).toBeVisible();
     await expect(nav.getByRole("link", { name: "Keystone home" })).toBeVisible();
@@ -22,8 +20,10 @@ test.describe("Landing — Nav", () => {
       await expect(primaryNav).toBeHidden();
     }
 
-    await expect(nav.locator('a[aria-label="GitHub"]')).toHaveAttribute("href", githubUrl);
-    await expect(nav.locator(".download-link")).toHaveAttribute("href", /^(#download|https:\/\/github\.com\/.*)$/);
+    await expect(nav.locator('a[aria-label="GitHub"]')).toHaveCount(0);
+    await expect(nav.getByTestId("download-unavailable")).toContainText(
+      "Download unavailable",
+    );
   });
 });
 
@@ -38,10 +38,10 @@ test.describe("Landing — Hero", () => {
     await expect(h1).toContainText("built for Mac");
     await expect(page.getByText("Built for Mac", { exact: true })).toBeVisible();
 
-    await expect(page.getByRole("link", { name: /^Download$/i }).first()).toHaveAttribute("href", /^(#download|https:\/\/github\.com\/.*)$/);
+    await expect(page.getByTestId("download-unavailable").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /View evidence/i })).toHaveAttribute("href", /^\/reports\/?$/);
 
-    for (const label of ["macOS first", "Local benchmark runs", "Windows and Linux planned"]) {
+    for (const label of ["macOS first", "Local benchmark runs", "Reviewable evidence"]) {
       await expect(page.getByText(label, { exact: true })).toBeVisible();
     }
   });
@@ -104,7 +104,7 @@ test.describe("Landing — Evidence Sections", () => {
     const section = page.locator("#evidence");
     await expect(section.getByText("Average time, lower is better")).toBeVisible();
     await expect(section.getByText("ML-KEM (Kyber)")).toBeVisible();
-    await expect(section.getByText("Keep release claims honest until every platform is packaged.")).toBeVisible();
+    await expect(section.getByText("Machine-relative, reviewable.")).toBeVisible();
 
     for (const gate of ["verify-native", "build-addon", "verify-crypto-addons", "build-benchmarks", "package-mac-prod"]) {
       await expect(section.getByText(gate)).toBeVisible();
@@ -113,14 +113,30 @@ test.describe("Landing — Evidence Sections", () => {
 });
 
 test.describe("Landing — Download", () => {
-  test("renders macOS as available and Windows/Linux as pending", async ({ page }) => {
+  test("release routes fail closed while the manifest is disabled", async ({
+    request,
+  }) => {
+    const manifest = await request.get("/releases/latest.json");
+    expect(manifest.status()).toBe(404);
+    await expect(manifest.json()).resolves.toEqual({ available: false });
+
+    const download = await request.get("/download", { maxRedirects: 0 });
+    expect(download.status()).toBe(404);
+    await expect(download.json()).resolves.toEqual({
+      available: false,
+      message: "The verified macOS beta is not available yet.",
+    });
+  });
+
+  test("renders all downloads as unavailable until verification passes", async ({ page }) => {
     await page.goto("/");
     const section = page.locator("#workloads");
     await expect(section.locator("[data-testid=download-card]")).toHaveCount(3);
 
-    await expect(section.getByRole("link", { name: /Download for macOS/i })).toHaveAttribute("href", githubUrl);
-    await expect(section.getByRole("button", { name: /Windows package later/i })).toBeDisabled();
-    await expect(section.getByRole("button", { name: /Linux package later/i })).toBeDisabled();
+    await expect(section.getByText("Download unavailable")).toBeVisible();
+    await expect(section.locator('a[href="/download"]')).toHaveCount(0);
+    await expect(section.getByRole("button", { name: /Windows validation required/i })).toBeDisabled();
+    await expect(section.getByRole("button", { name: /Linux validation required/i })).toBeDisabled();
   });
 });
 
@@ -130,15 +146,14 @@ test.describe("Landing — Footer", () => {
     const footer = page.getByRole("contentinfo");
     await expect(footer).toBeVisible();
 
-    for (const heading of ["Product", "Resources", "Source", "Status"]) {
+    for (const heading of ["Product", "Resources", "Project", "Status"]) {
       await expect(footer.getByText(heading, { exact: true })).toBeVisible();
     }
 
     await expect(footer.locator("input, textarea")).toHaveCount(0);
-    await expect(footer.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", githubUrl);
     await expect(footer.getByRole("link", { name: /Terms of Use/i })).toHaveAttribute("href", /^\/terms\/?$/);
     await expect(footer.getByRole("link", { name: /Privacy Policy/i })).toHaveAttribute("href", /^\/privacy\/?$/);
-    await expect(footer.getByText(/macOS build ships today/i)).toBeVisible();
+    await expect(footer.getByText(/release verification in progress/i)).toBeVisible();
   });
 });
 
@@ -175,9 +190,20 @@ test.describe("Landing — Mobile nav", () => {
     const menu = page.getByRole("navigation", { name: "Mobile" });
     await expect(menu).toBeVisible();
     await expect(menu.getByRole("link", { name: "Benchmarks" })).toHaveAttribute("href", "#benchmarks");
-    await expect(menu.getByRole("link", { name: /^Download$/i })).toHaveAttribute("href", /^(#download|https:\/\/github\.com\/.*)$/);
+    await expect(menu.getByTestId("download-unavailable")).toBeVisible();
 
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
   });
+});
+
+test("does not expose private source or a false download", async ({ page }) => {
+  await page.goto("/");
+  await expect(
+    page.locator('a[href*="github.com/Brandon1138/keystone"]'),
+  ).toHaveCount(0);
+  await expect(page.locator('a[href*="/archive/refs/"]')).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /View on GitHub/i })).toHaveCount(0);
+  await expect(page.getByText("Download unavailable").first()).toBeVisible();
+  await expect(page.locator('a[href="/download"]')).toHaveCount(0);
 });

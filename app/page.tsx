@@ -6,11 +6,9 @@ import {
   ChevronDown,
   CircleDot,
   Cpu,
-  ExternalLink,
   FileCheck2,
   FileJson,
   Gauge,
-  Github,
   HardDrive,
   KeyRound,
   Layers3,
@@ -26,8 +24,16 @@ import { LiquidGlassMaterial } from "@/components/landing/LiquidGlassMaterial";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { AppleLogo, WindowsLogo, TuxLogo } from "@/components/landing/BrandLogos";
 import { SmartDownloadButton } from "@/components/landing/SmartDownloadButton";
+import manifestJson from "@/content/releases/latest.json";
+import {
+  resolveReleaseState,
+  validateReleaseManifest,
+} from "@/lib/releases/manifest";
 
-const GITHUB_URL = "https://github.com/Brandon1138/keystone";
+const release = resolveReleaseState(
+  validateReleaseManifest(manifestJson),
+  process.env.KEYSTONE_ARTIFACT_BASE_URL,
+);
 
 const NAV_LINKS = [
   { label: "Overview", href: "#overview" },
@@ -118,12 +124,12 @@ const FOOTER_GROUPS = [
     ],
   },
   {
-    heading: "Source",
+    heading: "Project",
     links: [
-      ["GitHub", GITHUB_URL],
+      ["Case study", "https://mikoshi.studio/cases/keystone"],
       ["Security", "/security/"],
       ["Contact", "/contact/"],
-      ["License", "/terms/"],
+      ["Documentation", "/docs/"],
     ],
   },
 ] as const;
@@ -418,11 +424,19 @@ export default function Page() {
               ))}
             </nav>
             <div className="header-actions">
-              <Link className="icon-link" href={GITHUB_URL} aria-label="GitHub">
-                <Github className="h-4 w-4" />
-              </Link>
-              <SmartDownloadButton className="download-link" githubUrl={GITHUB_URL} showSpan />
-              <MobileNav links={NAV_LINKS} githubUrl={GITHUB_URL} />
+              <SmartDownloadButton
+                available={release.available}
+                version={release.available ? release.manifest.version : undefined}
+                className="download-link"
+                showSpan
+              />
+              <MobileNav
+                links={NAV_LINKS}
+                releaseAvailable={release.available}
+                releaseVersion={
+                  release.available ? release.manifest.version : undefined
+                }
+              />
             </div>
           </div>
         </LiquidGlassMaterial>
@@ -445,7 +459,11 @@ export default function Page() {
                 post-quantum and classical cryptographic algorithms with reproducible local evidence.
               </p>
               <div className="hero-actions">
-                <SmartDownloadButton className="primary-action" githubUrl={GITHUB_URL} />
+                <SmartDownloadButton
+                  available={release.available}
+                  version={release.available ? release.manifest.version : undefined}
+                  className="primary-action"
+                />
                 <Link className="secondary-action" href="/reports/">
                   View evidence
                   <ArrowRight className="h-4 w-4" />
@@ -462,7 +480,7 @@ export default function Page() {
                 </li>
                 <li>
                   <CheckCircle2 className="h-4 w-4" />
-                  Windows and Linux planned
+                  Reviewable evidence
                 </li>
               </ul>
             </div>
@@ -545,11 +563,13 @@ export default function Page() {
               ))}
             </div>
             <div className="spec-copy">
-              <span>Export posture</span>
-              <h2>Keep release claims honest until every platform is packaged.</h2>
+              <span>Benchmark posture</span>
+              <h2>Machine-relative, reviewable.</h2>
               <p>
-                macOS leads because it is the current local package target. Windows and Linux remain
-                visible as planned paths, not finished promises.
+                The values shown here are interface fixtures, not universal
+                performance claims. Verified machine metadata and reproducible
+                reference runs belong in Keystone Harness; re-run the suite
+                locally for machine-specific results.
               </p>
               <div className="release-gates" aria-label="macOS package gates">
                 {RELEASE_GATES.map((step) => (
@@ -564,23 +584,36 @@ export default function Page() {
           <div id="download" className="container-page download-grid">
             <div className="download-copy">
               <span>Download</span>
-              <h2>Start with the Mac build. Keep the rest in the release path.</h2>
+              <h2>
+                {release.available
+                  ? "Keystone is available as a signed macOS Public Beta."
+                  : "macOS beta release verification in progress."}
+              </h2>
               <p>
-                Keystone’s primary package is macOS first. Windows and Linux follow after native
-                artifacts are built and smoke-tested on their target operating systems.
+                The first public release targets macOS. Download visibility
+                remains blocked until the DMG, manifest, checksum, signing,
+                notarization, filename, version, and live response all agree.
               </p>
             </div>
             <div className="download-panel">
-              <article data-testid="download-card" className="download-card available">
+              <article
+                data-testid="download-card"
+                className={`download-card ${release.available ? "available" : "pending"}`}
+              >
                 <AppleLogo className="h-6 w-6" />
                 <div>
                   <h3>macOS</h3>
-                  <p>Apple Silicon and Intel, DMG release path.</p>
+                  <p>
+                    {release.available
+                      ? `Signed and notarized beta ${release.manifest.version}.`
+                      : "Signed and notarized DMG verification pending."}
+                  </p>
                 </div>
-                <Link href={GITHUB_URL}>
-                  Download for macOS
-                  <ExternalLink className="h-4 w-4" />
-                </Link>
+                <SmartDownloadButton
+                  available={release.available}
+                  version={release.available ? release.manifest.version : undefined}
+                  className="download-card-action"
+                />
               </article>
               <article data-testid="download-card" className="download-card pending">
                 <WindowsLogo className="h-6 w-6" />
@@ -589,7 +622,7 @@ export default function Page() {
                   <p>NSIS package target, validation pending.</p>
                 </div>
                 <button type="button" disabled>
-                  Windows package later
+                  Windows validation required
                 </button>
               </article>
               <article data-testid="download-card" className="download-card pending">
@@ -599,7 +632,7 @@ export default function Page() {
                   <p>AppImage target, distro validation pending.</p>
                 </div>
                 <button type="button" disabled>
-                  Linux package later
+                  Linux validation required
                 </button>
               </article>
             </div>
@@ -631,11 +664,15 @@ export default function Page() {
           ))}
           <div className="footer-release">
             <h3>Status</h3>
-            <p>macOS build ships today. Windows and Linux follow once native packages clear their gates.</p>
+            <p>
+              {release.available
+                ? `Signed macOS Public Beta ${release.manifest.version}.`
+                : "macOS beta release verification in progress."}
+            </p>
           </div>
         </div>
         <div className="container-page footer-bottom">
-          <span>© 2026 Keystone Labs Inc. All rights reserved.</span>
+          <span>© 2026 Brandon Aron. Keystone.</span>
           <span>
             <Link href="/terms/">Terms of Use</Link>
             <Link href="/privacy/">Privacy Policy</Link>
