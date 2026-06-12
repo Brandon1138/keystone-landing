@@ -1,6 +1,25 @@
 # Keystone Landing
 
-The marketing landing for Keystone, a desktop workbench for benchmarking classical and post-quantum cryptography.
+Keystone's public product landing and release-routing surface.
+
+## What this repository contains
+
+This repository contains Keystone's public product landing and release-routing
+surface. It does not contain the private Keystone application source.
+
+## Distribution boundary
+
+Keystone application binaries are served through the first-party `/download`
+route and separate artifact storage. GitHub Releases and generated source
+archives are not distribution channels for the Keystone application.
+
+## Release manifest
+
+`content/releases/latest.json` is the single release truth object. The download
+remains unavailable unless the manifest is valid, the separate artifact origin
+is configured, and the external release verifier passes checksum, signing,
+Gatekeeper, notarization/stapling, filename/version, minimum-macOS, and response
+checks.
 
 ## Stack
 
@@ -11,12 +30,15 @@ The marketing landing for Keystone, a desktop workbench for benchmarking classic
 - Lucide icons
 - Playwright for end-to-end tests
 
-## Develop
+## Local development
 
 ```sh
 npm install
 npm run dev
-# open http://localhost:3000
+npm run typecheck
+npm run test:release
+npm run test
+npm run build
 ```
 
 ## Scripts
@@ -28,6 +50,9 @@ npm run dev
 | `npm run start` | Run the production build |
 | `npm run lint` | Next's ESLint config |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm run test:release` | Validate manifest and release-state gating |
+| `npm run create:release-manifest` | Generate manifest facts from the verified DMG |
+| `npm run verify:release` | Verify checksum, signing, notarization, and live response |
 | `npm test` | Playwright suite (boots `npm run dev` automatically) |
 
 ## Routing

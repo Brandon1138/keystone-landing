@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, ExternalLink, Github } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
 import { LiquidGlassMaterial } from "@/components/landing/LiquidGlassMaterial";
 import { MobileNav } from "@/components/landing/MobileNav";
-import { AppleLogo } from "@/components/landing/BrandLogos";
 import { SmartDownloadButton } from "@/components/landing/SmartDownloadButton";
 import { InterfaceContourField } from "@/components/landing/InterfaceContourField";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -29,10 +28,18 @@ import {
   VerifiedIcon,
   VisualizeIcon,
 } from "@/components/landing/AppIcons";
+import manifestJson from "@/content/releases/latest.json";
+import {
+  resolveReleaseState,
+  validateReleaseManifest,
+} from "@/lib/releases/manifest";
 
 type IconCmp = ComponentType<{ className?: string }>;
 
-const GITHUB_URL = "https://github.com/Brandon1138/keystone";
+const release = resolveReleaseState(
+  validateReleaseManifest(manifestJson),
+  process.env.KEYSTONE_ARTIFACT_BASE_URL,
+);
 
 const NAV_LINKS = [
   { label: "Benchmarks", href: "#benchmarks" },
@@ -152,12 +159,12 @@ const FOOTER_GROUPS = [
     ],
   },
   {
-    heading: "Source",
+    heading: "Project",
     links: [
-      ["GitHub", GITHUB_URL],
+      ["Case study", "https://mikoshi.studio/cases/keystone"],
       ["Security", "/security/"],
       ["Contact", "/contact/"],
-      ["License", "/terms/"],
+      ["Documentation", "/docs/"],
     ],
   },
 ] as const;
@@ -539,11 +546,19 @@ export default function Page() {
               ))}
             </nav>
             <div className="header-actions">
-              <Link className="icon-link" href={GITHUB_URL} aria-label="GitHub">
-                <Github className="h-4 w-4" />
-              </Link>
-              <SmartDownloadButton className="download-link" githubUrl={GITHUB_URL} showSpan />
-              <MobileNav links={NAV_LINKS} githubUrl={GITHUB_URL} />
+              <SmartDownloadButton
+                available={release.available}
+                version={release.available ? release.manifest.version : undefined}
+                className="download-link"
+                showSpan
+              />
+              <MobileNav
+                links={NAV_LINKS}
+                releaseAvailable={release.available}
+                releaseVersion={
+                  release.available ? release.manifest.version : undefined
+                }
+              />
             </div>
           </div>
         </LiquidGlassMaterial>
@@ -646,17 +661,19 @@ export default function Page() {
               </span>
               <h2>Keystone for macOS.</h2>
               <p>
-                Packaged through the five gates above. Windows and Linux follow on the same
-                release path.
+                {release.available
+                  ? "Packaged through the five gates above. Windows and Linux follow on the same release path."
+                  : "Download stays closed until the DMG, manifest, checksum, signing, notarization, filename, version, and live response all agree."}
               </p>
               <div className="download-actions">
-                <Link className="primary-action" href={GITHUB_URL} data-testid="download-macos">
-                  <AppleLogo className="h-5 w-5" />
-                  Download for macOS
-                </Link>
-                <Link className="secondary-action" href={GITHUB_URL}>
-                  View on GitHub
-                  <ExternalLink className="h-4 w-4" />
+                <SmartDownloadButton
+                  available={release.available}
+                  version={release.available ? release.manifest.version : undefined}
+                  className="primary-action"
+                />
+                <Link className="secondary-action" href="/reports/">
+                  View evidence
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -684,11 +701,15 @@ export default function Page() {
           ))}
           <div className="footer-release">
             <h3>Status</h3>
-            <p>macOS available · Win/Linux on the release path</p>
+            <p>
+              {release.available
+                ? `Signed macOS Public Beta ${release.manifest.version}.`
+                : "macOS beta release verification in progress."}
+            </p>
           </div>
         </div>
         <div className="container-page footer-bottom">
-          <span>© 2026 Keystone Labs Inc. All rights reserved.</span>
+          <span>© 2026 Brandon Aron. Keystone.</span>
           <ThemeToggle />
           <span>
             <Link href="/terms/">Terms of Use</Link>

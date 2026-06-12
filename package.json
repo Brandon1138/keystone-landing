@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "create:release-manifest": "node scripts/create-release-manifest.mjs",
+    "test:release": "node --test --experimental-strip-types tests/release-manifest.test.mjs",
+    "verify:release": "node scripts/verify-release.mjs",
     "test": "playwright test"
   },
   "dependencies": {

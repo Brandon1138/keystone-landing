@@ -442,6 +442,7 @@ svg {
 .secondary-action,
 .inline-link,
 .download-card a,
+.download-card-action,
 .download-card button {
   display: inline-flex;
   align-items: center;
@@ -483,6 +484,24 @@ svg {
   border-radius: 9px;
   padding-inline: 15px;
   font-size: 14px;
+}
+
+.download-link[data-testid="download-unavailable"],
+.primary-action[data-testid="download-unavailable"],
+.mobile-menu-primary[data-testid="download-unavailable"],
+.download-card-action[data-testid="download-unavailable"] {
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--color-surface-2) 72%, transparent);
+  color: var(--color-foreground-subtle);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.download-link[data-testid="download-unavailable"]:hover,
+.primary-action[data-testid="download-unavailable"]:hover,
+.mobile-menu-primary[data-testid="download-unavailable"]:hover,
+.download-card-action[data-testid="download-unavailable"]:hover {
+  transform: none;
 }
 
 .icon-link:hover,

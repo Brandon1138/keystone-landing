@@ -30,8 +30,8 @@ export const metadata: Metadata = {
     "macOS",
     "cryptography benchmarks",
   ],
-  authors: [{ name: "Keystone Labs" }],
-  creator: "Keystone Labs",
+  authors: [{ name: "Brandon Aron", url: "https://mikoshi.studio" }],
+  creator: "Brandon Aron",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
