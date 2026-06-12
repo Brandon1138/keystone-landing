@@ -3,17 +3,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Github, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { SmartDownloadButton } from "./SmartDownloadButton";
 
 type NavLink = { label: string; href: string };
 
 export function MobileNav({
   links,
-  githubUrl,
+  releaseAvailable,
+  releaseVersion,
 }: {
   links: readonly NavLink[];
-  githubUrl: string;
+  releaseAvailable: boolean;
+  releaseVersion?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -59,13 +61,13 @@ export function MobileNav({
           ))}
         </ul>
         <div className="mobile-menu-actions">
-          <Link href={githubUrl} className="mobile-menu-secondary" onClick={() => setOpen(false)}>
-            <Github className="h-4 w-4" aria-hidden />
-            View source
+          <Link href="/docs/" className="mobile-menu-secondary" onClick={() => setOpen(false)}>
+            Documentation
           </Link>
           <SmartDownloadButton
             className="mobile-menu-primary"
-            githubUrl={githubUrl}
+            available={releaseAvailable}
+            version={releaseVersion}
             onClick={() => setOpen(false)}
           />
         </div>
