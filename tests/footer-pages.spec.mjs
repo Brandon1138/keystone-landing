@@ -19,6 +19,11 @@ const newFooterPages = footerPages.filter(({ path }) =>
   ["/platform/", "/benchmarks/", "/schemes/", "/reports/", "/contact/"].includes(path),
 );
 
+function oklchLightness(value) {
+  const match = value.match(/oklch\(\s*([0-9.]+)/i);
+  return match ? Number(match[1]) : Number.NaN;
+}
+
 // Tests that assert behavior on the landing page (/) live in
 // tests/landing.spec.mjs. This file is scoped to the static sub-pages
 // reachable from the landing's footer.
@@ -57,6 +62,32 @@ for (const { path } of footerPages) {
     }
   });
 }
+
+test("static footer pages follow the system dark appearance", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/about/");
+
+  const theme = await page.evaluate(() => {
+    const rootStyles = getComputedStyle(document.documentElement);
+    const bodyStyles = getComputedStyle(document.body);
+
+    return {
+      colorScheme: rootStyles.getPropertyValue("color-scheme").trim(),
+      background: rootStyles.getPropertyValue("--bg").trim(),
+      surface: rootStyles.getPropertyValue("--surface").trim(),
+      ink: rootStyles.getPropertyValue("--ink").trim(),
+      bodyBackground: bodyStyles.backgroundColor,
+    };
+  });
+  const backgroundLightness = oklchLightness(theme.background);
+  const surfaceLightness = oklchLightness(theme.surface);
+
+  expect(theme.colorScheme).toContain("dark");
+  expect(backgroundLightness).toBeLessThan(0.12);
+  expect(surfaceLightness).toBeGreaterThan(backgroundLightness);
+  expect(oklchLightness(theme.ink)).toBeGreaterThan(0.84);
+  expect(theme.bodyBackground).not.toBe("rgb(255, 255, 255)");
+});
 
 test("contact page does not present a fake working form or backend", async ({ page }) => {
   await page.goto("/contact/");
