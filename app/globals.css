@@ -203,27 +203,32 @@ svg {
   width: min(calc(100% - 48px), 1320px);
   margin-inline: auto;
   pointer-events: auto;
+  border-color: color-mix(in oklab, var(--color-border) 52%, var(--color-surface));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 88%, transparent),
+    0 1px 2px color-mix(in oklab, var(--color-foreground) 6%, transparent),
+    0 14px 36px color-mix(in oklab, var(--color-foreground) 8%, transparent);
 }
 
 .header-inner {
   display: grid;
-  min-height: 80px;
+  min-height: 64px;
   grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
   align-items: center;
   gap: clamp(18px, 4vw, 56px);
-  padding: 0 24px;
+  padding: 0 14px 0 20px;
 }
 
 .brand-link {
   display: inline-flex;
   width: fit-content;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   color: var(--color-foreground);
   font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 20px;
+  font-weight: 620;
+  letter-spacing: -0.018em;
   line-height: 1;
   overflow: visible;
 }
@@ -241,8 +246,8 @@ svg {
 }
 
 .brand-mark svg {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   overflow: visible;
 }
 
@@ -277,11 +282,11 @@ svg {
 
 .nav-toggle {
   display: none;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border: 1px solid var(--hairline);
-  border-radius: 12px;
+  border-radius: 9px;
   background: color-mix(in oklab, var(--color-surface) 68%, transparent);
   color: var(--color-foreground);
   transition:
@@ -324,7 +329,7 @@ svg {
   display: grid;
   gap: 4px;
   border: 1px solid color-mix(in oklab, var(--color-surface) 60%, var(--color-border));
-  border-radius: 24px;
+  border-radius: 14px;
   background: color-mix(in oklab, var(--color-surface) 92%, transparent);
   -webkit-backdrop-filter: blur(28px) saturate(1.5);
   backdrop-filter: blur(28px) saturate(1.5);
@@ -347,7 +352,7 @@ svg {
   display: flex;
   min-height: 52px;
   align-items: center;
-  border-radius: 13px;
+  border-radius: 9px;
   padding: 0 14px;
   color: var(--color-foreground);
   font-size: 17px;
@@ -373,7 +378,7 @@ svg {
   align-items: center;
   justify-content: center;
   gap: 9px;
-  border-radius: 14px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 620;
 }
@@ -454,9 +459,10 @@ svg {
 }
 
 .icon-link {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border: 1px solid var(--hairline);
+  border-radius: 9px;
   background: color-mix(in oklab, var(--color-surface) 68%, transparent);
   color: var(--color-foreground-muted);
 }
@@ -473,9 +479,10 @@ svg {
 }
 
 .download-link {
-  min-height: 44px;
-  padding-inline: 18px;
-  font-size: 15px;
+  min-height: 38px;
+  border-radius: 9px;
+  padding-inline: 15px;
+  font-size: 14px;
 }
 
 .icon-link:hover,
@@ -557,6 +564,44 @@ svg {
 
 .no-break {
   white-space: nowrap;
+}
+
+/* Drafting annotation under the hero copy: release, platform, architecture. */
+.hero-lead .hero-meta {
+  margin: 24px 0 0;
+  color: var(--color-foreground-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.hero-meta span {
+  color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-lead {
+    animation: hero-rise 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .window-stage {
+    animation: hero-rise 880ms cubic-bezier(0.16, 1, 0.3, 1) 140ms both;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-lead p {
@@ -1414,10 +1459,44 @@ svg {
 
 .evidence-band {
   --ink: oklch(0.96 0.008 247);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background:
     linear-gradient(180deg, oklch(0.185 0.025 255), oklch(0.145 0.022 255)),
     oklch(0.16 0.024 255);
   color: var(--ink);
+}
+
+.evidence-band .container-page {
+  position: relative;
+  z-index: 1;
+}
+
+/* The mark as structure: a blueprint tracing of the glyph, cropped by the
+   band's right edge, one facet held in the accent blue. */
+.band-glyph {
+  position: absolute;
+  top: 50%;
+  right: clamp(-220px, -12vw, -120px);
+  z-index: 0;
+  width: clamp(520px, 46vw, 720px);
+  transform: translateY(-50%) rotate(8deg);
+  pointer-events: none;
+}
+
+.band-glyph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.band-glyph .wire-ink {
+  stroke: color-mix(in oklab, var(--ink) 13%, transparent);
+}
+
+.band-glyph .wire-accent {
+  stroke: color-mix(in oklab, var(--color-primary-light) 36%, transparent);
 }
 
 .evidence-band .section-index > span:first-child {
@@ -1515,6 +1594,28 @@ svg {
   inset: 0 auto 0 0;
   display: block;
   background: linear-gradient(90deg, color-mix(in oklab, var(--color-primary-light) 36%, transparent), var(--color-primary-light));
+}
+
+/* Bars draw to their measured length as the band scrolls into view. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bench-bar i {
+      transform-origin: left center;
+      animation: bench-fill cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 20% entry 90%;
+    }
+  }
+}
+
+@keyframes bench-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .bench-time,
@@ -1693,8 +1794,41 @@ svg {
   text-align: center;
 }
 
+/* Datum centermark: dashed centerlines through the glyph, drafting style. */
 .download-glyph {
+  position: relative;
   color: var(--color-foreground);
+}
+
+.download-glyph::before,
+.download-glyph::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+}
+
+.download-glyph::before {
+  width: clamp(260px, 30vw, 420px);
+  height: 1px;
+  transform: translate(-50%, -50%);
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-border-strong) 55%, transparent) 0 7px,
+    transparent 7px 14px
+  );
+}
+
+.download-glyph::after {
+  width: 1px;
+  height: clamp(124px, 14vw, 168px);
+  transform: translate(-50%, -50%);
+  background: repeating-linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-border-strong) 55%, transparent) 0 7px,
+    transparent 7px 14px
+  );
 }
 
 .download-glyph svg {
@@ -1757,6 +1891,19 @@ svg {
   color: color-mix(in oklab, oklch(0.96 0.008 247) 66%, transparent);
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* Brand-board lockup descriptor. */
+.footer-grid .footer-lockup {
+  max-width: 30ch;
+  margin: 14px 0 0;
+  color: color-mix(in oklab, oklch(0.96 0.008 247) 52%, transparent);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.14em;
+  line-height: 1.7;
+  text-transform: uppercase;
 }
 
 .footer-grid h3 {
@@ -1949,10 +2096,14 @@ svg {
   }
 
   .header-inner {
-    min-height: 68px;
+    min-height: 58px;
   }
 
   .primary-nav {
+    display: none;
+  }
+
+  .band-glyph {
     display: none;
   }
 
@@ -1990,18 +2141,19 @@ svg {
   }
 
   .header-inner {
-    min-height: 62px;
+    min-height: 54px;
     grid-template-columns: auto auto;
-    padding-inline: 14px;
+    padding-inline: 12px;
   }
 
   .brand-link {
-    font-size: 20px;
+    font-size: 18px;
   }
 
-  .brand-mark {
-    width: 34px;
-    height: 34px;
+  .brand-mark,
+  .brand-mark svg {
+    width: 32px;
+    height: 32px;
   }
 
   .icon-link {
@@ -2010,7 +2162,8 @@ svg {
 
   .download-link {
     min-height: 40px;
-    padding-inline: 13px;
+    min-width: 40px;
+    padding-inline: 12px;
     font-size: 0;
   }
 
@@ -2023,6 +2176,12 @@ svg {
     min-height: 100svh;
     padding-top: 124px;
     padding-bottom: 32px;
+  }
+
+  .hero-lead .hero-meta {
+    font-size: 10px;
+    letter-spacing: 0.11em;
+    white-space: nowrap;
   }
 
   .window-stage {
