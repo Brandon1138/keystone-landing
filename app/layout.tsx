@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 const siteUrl =
@@ -29,8 +30,8 @@ export const metadata: Metadata = {
     "macOS",
     "cryptography benchmarks",
   ],
-  authors: [{ name: "Keystone Labs" }],
-  creator: "Keystone Labs",
+  authors: [{ name: "Brandon Aron", url: "https://mikoshi.studio" }],
+  creator: "Brandon Aron",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -49,17 +50,20 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
+  colorScheme: "light dark",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f3f5f8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c1320" },
+    { media: "(prefers-color-scheme: dark)", color: "#05070d" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <Script id="keystone-theme-init" src="/theme-init.js" strategy="beforeInteractive" />
+        {children}
+      </body>
     </html>
   );
 }
