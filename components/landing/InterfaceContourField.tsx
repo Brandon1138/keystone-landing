@@ -22,10 +22,12 @@ export function InterfaceContourField({
   useEffect(() => {
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
     const read = () => {
+      // Mirror the CSS: an explicit data-theme wins; only "system"/unset
+      // follows the OS preference. Otherwise a light override on a dark OS
+      // would leave the canvas using the dark-mode stroke on a light page.
+      const explicit = document.documentElement.getAttribute("data-theme");
       const isDark =
-        document.documentElement.getAttribute("data-theme") === "dark" ||
-        document.documentElement.classList.contains("dark") ||
-        systemTheme.matches;
+        explicit === "dark" || (explicit !== "light" && systemTheme.matches);
       worldRef.current = isDark ? "dark" : "light";
     };
     read();
