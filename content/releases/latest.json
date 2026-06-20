@@ -1,10 +1,10 @@
 {
-  "version": "0.0.0",
-  "filename": "Keystone-0.0.0-macOS.dmg",
-  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "signed": false,
-  "notarized": false,
-  "buildDate": "1970-01-01",
-  "minimumMacOS": "13.0",
+  "version": "1.0.0",
+  "filename": "Keystone-1.0.0-macOS.dmg",
+  "sha256": "a79db8d97bbcfcb117f53d65e5df2e3aa4aae3b69123204e578a5cf8a37d8bf8",
+  "signed": true,
+  "notarized": true,
+  "buildDate": "2026-06-20T17:15:24.750Z",
+  "minimumMacOS": "13.5",
   "downloadUrl": "https://keystone-landing-silk.vercel.app/download"
 }

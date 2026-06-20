@@ -54,7 +54,7 @@ test.describe("Landing — Nav", () => {
     await page.goto("/");
   });
 
-  test("renders the macOS-style header, primary links, and gated download state", async ({ page }) => {
+  test("renders the macOS-style header, primary links, and verified download", async ({ page }) => {
     const nav = page.getByRole("banner");
     await expect(nav).toBeVisible();
     await expect(nav.getByRole("link", { name: "Keystone home" })).toBeVisible();
@@ -72,8 +72,9 @@ test.describe("Landing — Nav", () => {
     }
 
     await expect(nav.locator('a[aria-label="GitHub"]')).toHaveCount(0);
-    await expect(nav.getByTestId("download-unavailable")).toContainText(
-      "Download unavailable",
+    await expect(nav.getByTestId("download-macos")).toHaveAttribute(
+      "href",
+      "/download",
     );
   });
 });
@@ -185,28 +186,38 @@ test.describe("Landing — Local by design", () => {
 });
 
 test.describe("Landing — Download", () => {
-  test("release routes fail closed while the manifest is disabled", async ({
+  test("release routes expose the verified manifest and canonical artifact", async ({
     request,
   }) => {
     const manifest = await request.get("/releases/latest.json");
-    expect(manifest.status()).toBe(404);
-    await expect(manifest.json()).resolves.toEqual({ available: false });
+    expect(manifest.status()).toBe(200);
+    await expect(manifest.json()).resolves.toMatchObject({
+      version: "1.0.0",
+      filename: "Keystone-1.0.0-macOS.dmg",
+      sha256:
+        "a79db8d97bbcfcb117f53d65e5df2e3aa4aae3b69123204e578a5cf8a37d8bf8",
+      signed: true,
+      notarized: true,
+      minimumMacOS: "13.5",
+    });
 
     const download = await request.get("/download", { maxRedirects: 0 });
-    expect(download.status()).toBe(404);
-    await expect(download.json()).resolves.toEqual({
-      available: false,
-      message: "The verified macOS beta is not available yet.",
-    });
+    expect(download.status()).toBe(307);
+    expect(download.headers().location).toBe(
+      "https://mjfyuqvvsvdktarm.public.blob.vercel-storage.com/keystone/Keystone-1.0.0-macOS.dmg",
+    );
   });
 
-  test("closes with a gated macOS download anchored by the glyph", async ({ page }) => {
+  test("closes with the verified macOS download anchored by the glyph", async ({ page }) => {
     await page.goto("/");
     const section = page.locator("#download");
     await expect(section.getByRole("heading", { name: "Keystone for macOS." })).toBeVisible();
-    await expect(section.getByTestId("download-unavailable")).toBeVisible();
+    await expect(section.getByTestId("download-macos")).toHaveAttribute(
+      "href",
+      "/download",
+    );
     await expect(section.getByRole("link", { name: /View evidence/i })).toHaveAttribute("href", /^\/reports\/?$/);
-    await expect(section.locator('a[href="/download"]')).toHaveCount(0);
+    await expect(section.locator('a[href="/download"]')).toHaveCount(1);
     await expect(section.getByRole("link", { name: /View on GitHub/i })).toHaveCount(0);
   });
 });
@@ -224,7 +235,9 @@ test.describe("Landing — Footer", () => {
     await expect(footer.locator("input, textarea")).toHaveCount(0);
     await expect(footer.getByRole("link", { name: /Terms of Use/i })).toHaveAttribute("href", /^\/terms\/?$/);
     await expect(footer.getByRole("link", { name: /Privacy Policy/i })).toHaveAttribute("href", /^\/privacy\/?$/);
-    await expect(footer.getByText(/release verification in progress/i)).toBeVisible();
+    await expect(
+      footer.getByText("Signed macOS Public Beta 1.0.0."),
+    ).toBeVisible();
   });
 
   test("theme toggle overrides system appearance from the footer", async ({ page }) => {
@@ -295,20 +308,23 @@ test.describe("Landing — Mobile nav", () => {
     await expect(menu).toBeVisible();
     await expect(menu.getByRole("link", { name: "Benchmarks" })).toHaveAttribute("href", "#benchmarks");
     await expect(menu.getByRole("link", { name: "Docs" })).toHaveAttribute("href", /^\/docs\/?$/);
-    await expect(menu.getByTestId("download-unavailable")).toBeVisible();
+    await expect(menu.getByTestId("download-macos")).toHaveAttribute(
+      "href",
+      "/download",
+    );
 
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
   });
 });
 
-test("does not expose private source or a false download", async ({ page }) => {
+test("does not expose private source and links only the verified download", async ({ page }) => {
   await page.goto("/");
   await expect(
     page.locator('a[href*="github.com/Brandon1138/keystone"]'),
   ).toHaveCount(0);
   await expect(page.locator('a[href*="/archive/refs/"]')).toHaveCount(0);
   await expect(page.getByRole("link", { name: /View on GitHub/i })).toHaveCount(0);
-  await expect(page.getByText("Download unavailable").first()).toBeVisible();
-  await expect(page.locator('a[href="/download"]')).toHaveCount(0);
+  await expect(page.getByText("Download unavailable")).toHaveCount(0);
+  await expect(page.locator('a[href="/download"]')).toHaveCount(3);
 });
