@@ -21,15 +21,31 @@ async function readRootTheme(page) {
   });
 }
 
+async function readPreviewBezelRgb(page) {
+  return page.locator(".container-scroll-content").evaluate((element) => {
+    const color = getComputedStyle(element).borderTopColor;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const context = canvas.getContext("2d");
+    if (!context) return [0, 0, 0];
+    context.fillStyle = color;
+    context.fillRect(0, 0, 1, 1);
+    return Array.from(context.getImageData(0, 0, 1, 1).data.slice(0, 3));
+  });
+}
+
 test.describe("Landing — system theme", () => {
   test("keeps the light palette when the system prefers light", async ({ page }) => {
     await page.emulateMedia({ colorScheme: "light" });
     await page.goto("/");
 
     const theme = await readRootTheme(page);
+    const bezel = await readPreviewBezelRgb(page);
     expect(theme.metaColorScheme).toBe("light dark");
     expect(oklchLightness(theme.background)).toBeGreaterThan(0.9);
     expect(oklchLightness(theme.foreground)).toBeLessThan(0.3);
+    expect(Math.min(...bezel)).toBeGreaterThan(210);
   });
 
   test("switches to a near-black palette when the system prefers dark", async ({ page }) => {
@@ -37,6 +53,7 @@ test.describe("Landing — system theme", () => {
     await page.goto("/");
 
     const theme = await readRootTheme(page);
+    const bezel = await readPreviewBezelRgb(page);
     const backgroundLightness = oklchLightness(theme.background);
     const surfaceLightness = oklchLightness(theme.surface);
     const foregroundLightness = oklchLightness(theme.foreground);
@@ -46,6 +63,7 @@ test.describe("Landing — system theme", () => {
     expect(surfaceLightness).toBeGreaterThan(backgroundLightness);
     expect(foregroundLightness).toBeGreaterThan(0.84);
     expect(theme.bodyBackground).not.toBe("rgb(255, 255, 255)");
+    expect(Math.max(...bezel)).toBeLessThan(90);
   });
 });
 
@@ -72,10 +90,11 @@ test.describe("Landing — Nav", () => {
     }
 
     await expect(nav.locator('a[aria-label="GitHub"]')).toHaveCount(0);
-    await expect(nav.getByTestId("download-macos")).toHaveAttribute(
-      "href",
-      "/download",
-    );
+    await expect(nav.getByTestId("release-pending")).toContainText("Release pending");
+    await expect(nav.getByTestId("download-unavailable")).toHaveCount(0);
+    if ((viewport?.width ?? 0) > 1040) {
+      await expect(nav.getByRole("link", { name: /View benchmarks/i })).toBeVisible();
+    }
   });
 });
 
@@ -121,17 +140,17 @@ test.describe("Landing — Hero", () => {
     expect(bandTop).toBeGreaterThanOrEqual(viewportHeight - 1);
   });
 
-  test("renders the layered Keystone app preview with the dashboard", async ({ page }) => {
-    const win = page.getByTestId("keystone-window");
+  test("renders the live Keystone app inside the container scroll preview", async ({ page }) => {
+    const preview = page.getByTestId("app-preview");
+    await expect(preview).toBeVisible();
+    const win = preview.getByTestId("keystone-window");
     await expect(win).toBeVisible();
     await expect(win.getByTestId("traffic-lights").locator("span")).toHaveCount(3);
-    await expect(win.getByRole("heading", { name: "Dashboard" })).toBeVisible();
-    await expect(win.getByText("Recent runs")).toBeVisible();
-    await expect(win.getByText("Evidence status")).toBeVisible();
-    await expect(win.getByRole("button", { name: /Run Benchmark/i })).toBeVisible();
-    await expect(win.getByText("Ready").first()).toBeVisible();
-    await expect(win.getByText("completed").first()).toBeVisible();
-    await expect(win.getByText("failed").first()).toBeVisible();
+    await expect(win.getByRole("heading", { level: 1, name: "Dashboard" })).toBeVisible();
+    await expect(win.getByRole("heading", { name: "Activity", exact: true })).toBeVisible();
+    await expect(win.getByRole("heading", { name: "Algorithm mix" })).toBeVisible();
+    await expect(win.getByRole("heading", { name: "Recent activity" })).toBeVisible();
+    await expect(win.getByRole("button", { name: /Run Benchmark/i }).first()).toBeVisible();
   });
 });
 
@@ -156,6 +175,10 @@ test.describe("Landing — Evidence band", () => {
 
   test("carries the coverage and package-gate ledgers", async ({ page }) => {
     const band = page.locator("#benchmarks");
+    await expect(band.getByTestId("evidence-trace")).toBeVisible();
+    for (const stage of ["01 · Measure", "02 · Cover", "03 · Verify"]) {
+      await expect(band.getByText(stage, { exact: true })).toBeVisible();
+    }
     await expect(band.getByRole("heading", { name: "Coverage" })).toBeVisible();
     await expect(band.getByText("RSA · ECDSA · AES")).toBeVisible();
 
@@ -171,16 +194,35 @@ test.describe("Landing — Local by design", () => {
     await page.goto("/");
   });
 
-  test("states the proof points as sentences beside the product evidence panel", async ({ page }) => {
+  test("turns the proof points into a synchronized local terminal transcript", async ({ page }) => {
     const section = page.locator("#local");
     await expect(section.getByRole("heading", { name: "Not a cloud dashboard pretending to be cryptography." })).toBeVisible();
+    await expect(section.getByTestId("sticky-proof")).toBeVisible();
     await expect(section.locator("[data-testid=proof-card]")).toHaveCount(3);
 
     for (const title of ["Local execution", "Parameter evidence", "Exportable reports"]) {
       await expect(section.getByRole("heading", { name: title })).toBeVisible();
     }
-    await expect(section.locator(".detail-frame").getByText("Evidence status", { exact: true })).toBeVisible();
-    await expect(section.locator(".detail-frame figcaption")).toBeVisible();
+    const terminal = section.getByTestId("evidence-terminal");
+    await expect(terminal).toBeVisible();
+
+    // The terminal starts with the local benchmark command and reads as still running.
+    await expect(terminal).toHaveAttribute("data-step", "0");
+    await expect(terminal.getByTestId("evidence-terminal-counter")).toHaveText("01 / 03");
+    await expect(terminal).toContainText("keystone bench --scheme ML-KEM-768 --iterations 10000");
+    await expect(terminal).toContainText("Local process");
+    await expect(terminal).toContainText("None");
+    await expect(terminal).toContainText("Run executing");
+    await expect(terminal).not.toContainText("keystone report export --format json --seal");
+
+    // Scrolling the copy advances the transcript until the record is sealed.
+    await section.getByRole("link", { name: /Read the docs/i }).scrollIntoViewIfNeeded();
+    await expect(terminal).toHaveAttribute("data-sealed", "true");
+    await expect(terminal.getByTestId("evidence-terminal-counter")).toHaveText("03 / 03");
+    await expect(terminal).toContainText("keystone report export --format json --seal");
+    await expect(terminal).toContainText("Export ready");
+    await expect(terminal).toContainText("Integrity verified");
+    await expect(terminal).toContainText("7F3A · 91C2 · B84E");
     await expect(section.getByRole("link", { name: /Read the docs/i })).toHaveAttribute("href", /^\/docs\/?$/);
   });
 });
@@ -275,7 +317,7 @@ test.describe("Landing — responsive", () => {
       await page.goto("/");
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow).toBeLessThanOrEqual(1);
-      const panelBounds = await page.getByTestId("keystone-window").evaluate((panel) => {
+      const panelBounds = await page.getByTestId("app-preview").evaluate((panel) => {
         const rect = panel.getBoundingClientRect();
         const viewportWidth = document.documentElement.clientWidth;
         const centerDelta = Math.abs(rect.left + rect.width / 2 - viewportWidth / 2);
@@ -307,11 +349,9 @@ test.describe("Landing — Mobile nav", () => {
     const menu = page.getByRole("navigation", { name: "Mobile" });
     await expect(menu).toBeVisible();
     await expect(menu.getByRole("link", { name: "Benchmarks" })).toHaveAttribute("href", "#benchmarks");
-    await expect(menu.getByRole("link", { name: "Docs" })).toHaveAttribute("href", /^\/docs\/?$/);
-    await expect(menu.getByTestId("download-macos")).toHaveAttribute(
-      "href",
-      "/download",
-    );
+    await expect(menu.getByRole("link", { name: "Docs", exact: true })).toHaveAttribute("href", /^\/docs\/?$/);
+    await expect(menu.getByTestId("release-pending")).toBeVisible();
+    await expect(menu.getByTestId("download-unavailable")).toHaveCount(0);
 
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
@@ -325,6 +365,7 @@ test("does not expose private source and links only the verified download", asyn
   ).toHaveCount(0);
   await expect(page.locator('a[href*="/archive/refs/"]')).toHaveCount(0);
   await expect(page.getByRole("link", { name: /View on GitHub/i })).toHaveCount(0);
-  await expect(page.getByText("Download unavailable")).toHaveCount(0);
-  await expect(page.locator('a[href="/download"]')).toHaveCount(3);
+  await expect(page.getByTestId("release-pending").first()).toBeVisible();
+  await expect(page.getByText("Download unavailable").first()).toBeVisible();
+  await expect(page.locator('a[href="/download"]')).toHaveCount(0);
 });

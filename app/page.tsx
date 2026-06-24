@@ -1,40 +1,20 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
 
-import { LiquidGlassMaterial } from "@/components/landing/LiquidGlassMaterial";
-import { MobileNav } from "@/components/landing/MobileNav";
+import { EditorialHero } from "@/components/landing/EditorialHero";
 import { SmartDownloadButton } from "@/components/landing/SmartDownloadButton";
+import { SiteHeader } from "@/components/landing/SiteHeader";
 import { InterfaceContourField } from "@/components/landing/InterfaceContourField";
+import { KeystoneAppDemo } from "@/components/landing/KeystoneAppDemo";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import {
-  ArrowForwardIcon,
-  BarChartIcon,
-  CheckCircleIcon,
-  CodexIcon,
-  EncryptionIcon,
-  ErrorIcon,
-  HistoryIcon,
-  ImportIcon,
-  LightModeIcon,
-  MoreHorizIcon,
-  QuantumIcon,
-  RefreshIcon,
-  ScheduleIcon,
-  SearchIcon,
-  SettingsIcon,
-  SpeedIcon,
-  TerminalIcon,
-  VerifiedIcon,
-  VisualizeIcon,
-} from "@/components/landing/AppIcons";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { TraceStage, TracingBeam } from "@/components/ui/tracing-beam";
 import manifestJson from "@/content/releases/latest.json";
 import {
   resolveReleaseState,
   validateReleaseManifest,
 } from "@/lib/releases/manifest";
-
-type IconCmp = ComponentType<{ className?: string }>;
 
 const release = resolveReleaseState(
   validateReleaseManifest(manifestJson),
@@ -85,60 +65,6 @@ const PROOF_POINTS = [
     body: "Runs resolve into reports you can hand to a reviewer, with parameters and integrity checks attached.",
   },
 ] as const;
-
-const QUICK_ACTIONS: { title: string; description: string; Icon: IconCmp }[] = [
-  { title: "Run Benchmarks", description: "Measure PQC and classical cryptographic performance.", Icon: SpeedIcon },
-  { title: "Run Encryption", description: "Generate keys, encrypt, sign, decrypt, and verify.", Icon: EncryptionIcon },
-  { title: "Quantum Workloads", description: "Execute Shor and Grover on simulators or IBM hardware.", Icon: QuantumIcon },
-];
-
-const SIDEBAR_GROUPS: { label: string; items: { text: string; Icon: IconCmp }[] }[] = [
-  {
-    label: "Execute",
-    items: [
-      { text: "Quantum Workloads", Icon: QuantumIcon },
-      { text: "Benchmarks", Icon: SpeedIcon },
-      { text: "Encryption", Icon: EncryptionIcon },
-      { text: "Schedule Jobs", Icon: ScheduleIcon },
-    ],
-  },
-  {
-    label: "Analyze",
-    items: [
-      { text: "Visualize", Icon: VisualizeIcon },
-      { text: "Codex", Icon: CodexIcon },
-      { text: "Job History", Icon: HistoryIcon },
-    ],
-  },
-  {
-    label: "Manage",
-    items: [
-      { text: "Import", Icon: ImportIcon },
-      { text: "Settings", Icon: SettingsIcon },
-    ],
-  },
-];
-
-const RECENT_RUNS = [
-  { algorithm: "kyber", status: "failed", started: "2:59:51 AM", iterations: "10,000" },
-  { algorithm: "kyber", status: "failed", started: "3:00:27 AM", iterations: "10,000" },
-  { algorithm: "kyber", status: "completed", started: "3:25:57 AM", iterations: "10,000" },
-  { algorithm: "kyber", status: "completed", started: "3:37:27 PM", iterations: "10,000" },
-] as const;
-
-const EVIDENCE_STATS = [
-  { label: "Local runtime", value: "Ready" },
-  { label: "Evidence", value: "4 runs" },
-  { label: "Dataset", value: "Default" },
-  { label: "Integrity", value: "2" },
-] as const;
-
-const TOOL_LINKS: { title: string; caption: string; Icon: IconCmp }[] = [
-  { title: "Schedule Jobs", caption: "Open schedule jobs", Icon: ScheduleIcon },
-  { title: "Visualize", caption: "Open visualize", Icon: VisualizeIcon },
-  { title: "Codex", caption: "Open codex", Icon: CodexIcon },
-  { title: "Job History", caption: "Open job history", Icon: HistoryIcon },
-];
 
 const FOOTER_GROUPS = [
   {
@@ -266,236 +192,41 @@ function SectionIndex({
   );
 }
 
-function ToolbarButton({ Icon, label }: { Icon: IconCmp; label: string }) {
-  return (
-    <button type="button" className="toolbar-button" aria-label={label} tabIndex={-1}>
-      <Icon />
-    </button>
-  );
-}
+const EVIDENCE_CHAIN_STAGES = [
+  {
+    index: "01",
+    eyebrow: "Local execution",
+    caption: "Runs on this Mac. Nothing leaves the machine.",
+    status: "Run executing",
+    rows: [
+      ["Execution", "Local process"],
+      ["Transfer", "None"],
+    ],
+  },
+  {
+    index: "02",
+    eyebrow: "Parameter evidence",
+    caption: "The conditions are captured with the result.",
+    status: "Record captured",
+    rows: [
+      ["Scheme", "ML-KEM-768"],
+      ["Iterations", "10,000"],
+      ["Average / op", "0.0060 ms"],
+    ],
+  },
+  {
+    index: "03",
+    eyebrow: "Exportable report",
+    caption: "Sealed into evidence a reviewer can inspect.",
+    status: "Integrity verified",
+    rows: [
+      ["Integrity checks", "2 passed"],
+      ["Review state", "Export ready"],
+    ],
+  },
+] as const;
 
-const STATUS_TONES: Record<string, { bg: string; Icon: IconCmp }> = {
-  ready: { bg: "#64748B", Icon: ScheduleIcon },
-  success: { bg: "#059669", Icon: CheckCircleIcon },
-  run: { bg: "#006FE6", Icon: CheckCircleIcon },
-  fail: { bg: "#DC2626", Icon: ErrorIcon },
-};
-
-function StatusBadge({ tone = "ready", children }: { tone?: keyof typeof STATUS_TONES; children: string }) {
-  const { bg, Icon } = STATUS_TONES[tone] ?? STATUS_TONES.ready;
-  return (
-    <span className="status-badge" style={{ backgroundColor: bg }}>
-      <Icon className="status-badge-icon" />
-      {children}
-    </span>
-  );
-}
-
-function AppSidebar() {
-  return (
-    <aside className="app-sidebar" aria-label="Keystone app navigation">
-      {SIDEBAR_GROUPS.map((group) => (
-        <div key={group.label} className="sidebar-group">
-          <span>{group.label}</span>
-          {group.items.map(({ text, Icon }) => (
-            <div key={text} className="sidebar-item">
-              <Icon className="sidebar-icon" aria-hidden />
-              <small>{text}</small>
-            </div>
-          ))}
-        </div>
-      ))}
-      <div className="sidebar-bottom">
-        <span className="sidebar-toggle-track" aria-hidden />
-        <LightModeIcon className="sidebar-toggle-icon" />
-        <small>v1.0.0</small>
-      </div>
-    </aside>
-  );
-}
-
-function DashboardCard({
-  label,
-  Icon,
-  action,
-  className = "",
-  children,
-}: {
-  label: string;
-  Icon: IconCmp;
-  action?: ReactNode;
-  className?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className={`dashboard-card ${className}`.trim()}>
-      <div className="dashboard-card-head">
-        <span className="dashboard-card-label">
-          <Icon className="dashboard-card-label-icon" />
-          {label}
-        </span>
-        {action}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function QuickActions() {
-  return (
-    <DashboardCard label="Quick actions" Icon={TerminalIcon} className="dashboard-quick">
-      <div className="dashboard-command-grid">
-        {QUICK_ACTIONS.map(({ title, description, Icon }) => (
-          <div key={title} className="dashboard-command">
-            <span className="dashboard-command-icon">
-              <Icon />
-            </span>
-            <span className="dashboard-command-text">
-              <strong>{title}</strong>
-              <span>{description}</span>
-            </span>
-            <ArrowForwardIcon className="dashboard-command-arrow" />
-          </div>
-        ))}
-      </div>
-    </DashboardCard>
-  );
-}
-
-function RecentRuns() {
-  return (
-    <DashboardCard
-      label="Recent runs"
-      Icon={HistoryIcon}
-      action={
-        <span className="dashboard-pill-button" aria-hidden>
-          View all
-          <ArrowForwardIcon className="dashboard-pill-icon" />
-        </span>
-      }
-    >
-      <table className="dashboard-table" aria-label="Recent benchmark runs">
-        <thead>
-          <tr>
-            <th>Algorithm</th>
-            <th>Status</th>
-            <th>Started</th>
-            <th>Iterations</th>
-          </tr>
-        </thead>
-        <tbody>
-          {RECENT_RUNS.map((run, index) => (
-            <tr key={`${run.started}-${index}`}>
-              <td>{run.algorithm}</td>
-              <td>
-                <StatusBadge tone={run.status === "completed" ? "success" : "fail"}>
-                  {run.status}
-                </StatusBadge>
-              </td>
-              <td className="dashboard-mono">{run.started}</td>
-              <td className="dashboard-mono">{run.iterations}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </DashboardCard>
-  );
-}
-
-function EvidenceStatus() {
-  return (
-    <DashboardCard label="Evidence status" Icon={VerifiedIcon}>
-      <div className="dashboard-evidence-grid">
-        {EVIDENCE_STATS.map(({ label, value }) => (
-          <div key={label} className="dashboard-evidence-stat">
-            <span>{label}</span>
-            <strong>{value}</strong>
-          </div>
-        ))}
-      </div>
-      <div className="dashboard-evidence-footer">
-        <span className="dashboard-evidence-note">
-          <CheckCircleIcon className="dashboard-evidence-note-icon" />
-          Local evidence store available
-        </span>
-        <button type="button" className="dashboard-run-button" tabIndex={-1}>
-          Run Benchmark
-        </button>
-      </div>
-    </DashboardCard>
-  );
-}
-
-function ToolsResources() {
-  return (
-    <DashboardCard label="Tools and resources" Icon={CodexIcon} className="dashboard-tools">
-      <div className="dashboard-command-grid dashboard-command-grid-tools">
-        {TOOL_LINKS.map(({ title, caption, Icon }) => (
-          <div key={title} className="dashboard-command">
-            <span className="dashboard-command-icon">
-              <Icon />
-            </span>
-            <span className="dashboard-command-text">
-              <strong>{title}</strong>
-              <span>{caption}</span>
-            </span>
-            <ArrowForwardIcon className="dashboard-command-arrow" />
-          </div>
-        ))}
-      </div>
-    </DashboardCard>
-  );
-}
-
-function KeystoneWindow() {
-  return (
-    <div className="window-stage" data-contour-anchor="hero-panel" aria-label="Keystone macOS app preview">
-      <section className="app-window" data-testid="keystone-window">
-        <header className="window-toolbar">
-          <div className="traffic-lights" data-testid="traffic-lights" aria-hidden>
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="window-brand">
-            <span className="window-brand-mark" aria-hidden>
-              <KeystoneGlyph />
-            </span>
-            <span className="window-brand-name">Keystone</span>
-            <span className="window-brand-divider" aria-hidden />
-            <span className="window-brand-route">Dashboard</span>
-          </div>
-          <div className="toolbar-cluster">
-            <ToolbarButton Icon={BarChartIcon} label="Charts" />
-            <ToolbarButton Icon={RefreshIcon} label="Refresh" />
-            <ToolbarButton Icon={SearchIcon} label="Search" />
-            <button type="button" className="toolbar-menu" aria-label="View options" tabIndex={-1}>
-              <MoreHorizIcon />
-            </button>
-          </div>
-        </header>
-        <div className="window-body">
-          <AppSidebar />
-          <main className="app-main dashboard-main">
-            <div className="app-title-row">
-              <div>
-                <h2>Dashboard</h2>
-                <p>Post-quantum cryptography benchmarking and quantum runtime workbench.</p>
-              </div>
-              <StatusBadge tone="ready">Ready</StatusBadge>
-            </div>
-            <QuickActions />
-            <div className="dashboard-split">
-              <RecentRuns />
-              <EvidenceStatus />
-            </div>
-            <ToolsResources />
-          </main>
-        </div>
-      </section>
-    </div>
-  );
-}
+const EVIDENCE_FINGERPRINT = "7F3A · 91C2 · B84E";
 
 function BenchmarkTable() {
   const fastest = Math.min(...BENCHMARKS.map((row) => row.ms));
@@ -534,57 +265,27 @@ function BenchmarkTable() {
 export default function Page() {
   return (
     <>
-      <header className="site-header">
-        <LiquidGlassMaterial className="nav-material" cornerRadius={14}>
-          <div className="header-inner">
-            <BrandLink />
-            <nav aria-label="Primary" className="primary-nav">
-              {NAV_LINKS.map((link) => (
-                <Link key={link.label} href={link.href}>
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="header-actions">
-              <SmartDownloadButton
-                available={release.available}
-                version={release.available ? release.manifest.version : undefined}
-                className="download-link"
-                showSpan
-              />
-              <MobileNav
-                links={NAV_LINKS}
-                releaseAvailable={release.available}
-                releaseVersion={
-                  release.available ? release.manifest.version : undefined
-                }
-              />
-            </div>
-          </div>
-        </LiquidGlassMaterial>
-      </header>
+      <SiteHeader
+        links={NAV_LINKS}
+        releaseAvailable={release.available}
+        releaseVersion={release.available ? release.manifest.version : undefined}
+        brand={<BrandLink />}
+      />
 
       <main>
         <section id="overview" className="hero-section">
           <InterfaceContourField
             className="hero-contour-field"
-            anchorSelector="[data-contour-anchor='hero-panel']"
+            anchorSelector="[data-contour-anchor='hero-title']"
+            variant="benchmark"
           />
+          <div className="hero-measure-grid" aria-hidden />
           <div className="container-page hero-grid">
-            <div className="hero-lead">
-              <h1>
-                Post-quantum benchmarking, <span className="no-break">on your Mac.</span>
-              </h1>
-              <p>
-                Keystone runs ML-KEM, ML-DSA, Falcon, and SPHINCS+ against classical baselines
-                on your own hardware, and keeps the evidence.
-              </p>
-              <p className="hero-meta">
-                <span>v1.0.0</span> · macOS · Apple silicon
-              </p>
-            </div>
-            <KeystoneWindow />
+            <EditorialHero />
           </div>
+          <ContainerScroll>
+            <KeystoneAppDemo brandMark={<KeystoneGlyph />} />
+          </ContainerScroll>
         </section>
 
         <section id="benchmarks" className="evidence-band">
@@ -600,55 +301,57 @@ export default function Page() {
                 Every figure below comes from a run you can reproduce.
               </p>
             </div>
-            <BenchmarkTable />
-            <div className="band-ledgers">
-              <div className="ledger" aria-label="Algorithm coverage">
-                <h3>Coverage</h3>
-                <dl>
-                  {COVERAGE.map(({ family, sets }) => (
-                    <div key={family}>
-                      <dt>{family}</dt>
-                      <dd>{sets}</dd>
-                    </div>
-                  ))}
-                </dl>
+            <TracingBeam>
+              <TraceStage index="01" label="Measure">
+                <BenchmarkTable />
+              </TraceStage>
+              <div className="band-ledgers">
+                <TraceStage index="02" label="Cover" className="ledger" >
+                  <div aria-label="Algorithm coverage">
+                    <h3>Coverage</h3>
+                    <dl>
+                      {COVERAGE.map(({ family, sets }) => (
+                        <div key={family}>
+                          <dt>{family}</dt>
+                          <dd>{sets}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                </TraceStage>
+                <TraceStage index="03" label="Verify" className="ledger trace-stage-verify">
+                  <div aria-label="macOS package gates">
+                    <h3>Package gates</h3>
+                    <ol>
+                      {RELEASE_GATES.map((gate) => (
+                        <li key={gate}>{gate}</li>
+                      ))}
+                    </ol>
+                  </div>
+                </TraceStage>
               </div>
-              <div className="ledger" aria-label="macOS package gates">
-                <h3>Package gates</h3>
-                <ol>
-                  {RELEASE_GATES.map((gate) => (
-                    <li key={gate}>{gate}</li>
-                  ))}
-                </ol>
-              </div>
-            </div>
+            </TracingBeam>
           </div>
         </section>
 
         <section id="local" className="local-section">
           <div className="container-page">
             <SectionIndex index="02" label="Local by design" annotation="evidence stays on the machine" />
-            <div className="local-grid">
-              <div className="local-copy">
-                <h2>Not a cloud dashboard pretending to be cryptography.</h2>
-                <div className="proof-ledger">
-                  {PROOF_POINTS.map(({ title, body }) => (
-                    <article key={title} data-testid="proof-card" className="proof-entry">
-                      <h3>{title}</h3>
-                      <p>{body}</p>
-                    </article>
-                  ))}
-                </div>
-                <Link href="/docs/" className="inline-link">
-                  Read the docs
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-              <figure className="detail-frame">
-                <EvidenceStatus />
-                <figcaption>Evidence status, as it ships in v1.0.0</figcaption>
-              </figure>
+            <div className="local-copy">
+              <h2>Not a cloud dashboard pretending to be cryptography.</h2>
             </div>
+            <StickyScroll
+              content={PROOF_POINTS.map(({ title, body }) => ({
+                title,
+                description: body,
+              }))}
+              stages={EVIDENCE_CHAIN_STAGES}
+              fingerprint={EVIDENCE_FINGERPRINT}
+            />
+            <Link href="/docs/" className="inline-link">
+              Read the docs
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </section>
 

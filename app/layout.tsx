@@ -1,6 +1,21 @@
 import type { Metadata, Viewport } from "next";
+import { Archivo_Narrow, Syne } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+
+const archivoNarrow = Archivo_Narrow({
+  subsets: ["latin"],
+  weight: "variable",
+  display: "swap",
+  variable: "--font-archivo-narrow",
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+  display: "swap",
+  variable: "--font-syne",
+});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -60,7 +75,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={`${syne.variable} ${archivoNarrow.variable}`}>
         <Script id="keystone-theme-init" src="/theme-init.js" strategy="beforeInteractive" />
         {children}
       </body>
