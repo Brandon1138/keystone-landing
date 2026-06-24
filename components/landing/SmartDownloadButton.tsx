@@ -6,6 +6,7 @@ interface SmartDownloadButtonProps {
   version?: string;
   className?: string;
   showSpan?: boolean;
+  ariaLabel?: string;
   onClick?: () => void;
 }
 
@@ -14,6 +15,7 @@ export function SmartDownloadButton({
   version,
   className,
   showSpan = false,
+  ariaLabel,
   onClick,
 }: SmartDownloadButtonProps) {
   if (!available) {
@@ -33,9 +35,10 @@ export function SmartDownloadButton({
       className={className}
       href="/download"
       data-testid="download-macos"
+      aria-label={ariaLabel}
       onClick={onClick}
     >
-      <Download className="h-4 w-4" />
+      <Download className="h-4 w-4" aria-hidden />
       {showSpan ? (
         <span>Download</span>
       ) : (

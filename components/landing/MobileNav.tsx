@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { SmartDownloadButton } from "./SmartDownloadButton";
+import { MobileReleaseAction } from "./ReleaseNavAction";
 
 type NavLink = { label: string; href: string };
 
@@ -61,11 +61,7 @@ export function MobileNav({
           ))}
         </ul>
         <div className="mobile-menu-actions">
-          <Link href="/docs/" className="mobile-menu-secondary" onClick={() => setOpen(false)}>
-            Documentation
-          </Link>
-          <SmartDownloadButton
-            className="mobile-menu-primary"
+          <MobileReleaseAction
             available={releaseAvailable}
             version={releaseVersion}
             onClick={() => setOpen(false)}

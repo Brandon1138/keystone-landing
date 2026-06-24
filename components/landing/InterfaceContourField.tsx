@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 type InterfaceContourFieldProps = {
   anchorSelector?: string;
   className?: string;
+  variant?: "default" | "benchmark";
 };
 
 /**
@@ -15,6 +16,7 @@ type InterfaceContourFieldProps = {
 export function InterfaceContourField({
   anchorSelector = "[data-contour-anchor='hero-title']",
   className,
+  variant = "default",
 }: InterfaceContourFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const worldRef = useRef<"light" | "dark">("light");
@@ -151,6 +153,18 @@ export function InterfaceContourField({
       topology += 0.45 * Math.sin((x * 0.0021 + y * 0.0036) + t * T3);
       topology += 0.30 * Math.cos((x * 0.0017 - y * 0.0028) - t * T4);
 
+      if (variant === "benchmark") {
+        const logRidge = Math.sin(x * 0.0018 + y * 0.0009) * 0.55;
+        const stepTrace =
+          0.38 *
+          Math.tanh(
+            2.4 * Math.sin(x * 0.0042 - t * T2 * 0.6) +
+              0.9 * Math.sin(y * 0.0061 + t * T3 * 0.4),
+          );
+        const benchPlateau = 0.22 * Math.sin(x * 0.0026) * Math.cos(y * 0.0014);
+        topology += logRidge + stepTrace + benchPlateau;
+      }
+
       if (markActive) {
         const dx = (x - markCx) / markRx;
         const dy = (y - markCy) / markRy;
@@ -277,12 +291,16 @@ export function InterfaceContourField({
 
       ctx.lineCap = "butt";
       ctx.lineJoin = "miter";
-      ctx.lineWidth = 0.9;
+      ctx.lineWidth = variant === "benchmark" ? 0.75 : 0.9;
       // Using Keystone-compatible cobalt tones
       ctx.strokeStyle =
         worldRef.current === "dark"
-          ? "rgba(185, 202, 255, 0.15)"
-          : "rgba(26, 52, 105, 0.30)";
+          ? variant === "benchmark"
+            ? "rgba(185, 202, 255, 0.18)"
+            : "rgba(185, 202, 255, 0.15)"
+          : variant === "benchmark"
+            ? "rgba(26, 52, 105, 0.36)"
+            : "rgba(26, 52, 105, 0.30)";
 
       for (let i = 0; i < LEVELS.length; i++) {
         drawContours(LEVELS[i]);
@@ -324,7 +342,7 @@ export function InterfaceContourField({
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerleave", onPointerLeave);
     };
-  }, [anchorSelector]);
+  }, [anchorSelector, variant]);
 
   return (
     <div className={cn("keystone-contour-field", className)} aria-hidden>
