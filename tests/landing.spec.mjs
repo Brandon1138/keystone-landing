@@ -46,6 +46,7 @@ test.describe("Landing — system theme", () => {
     expect(oklchLightness(theme.background)).toBeGreaterThan(0.9);
     expect(oklchLightness(theme.foreground)).toBeLessThan(0.3);
     expect(Math.min(...bezel)).toBeGreaterThan(210);
+    await expect(page.getByTestId("keystone-window")).toHaveAttribute("data-ks-theme", "light");
   });
 
   test("switches to a near-black palette when the system prefers dark", async ({ page }) => {
@@ -64,6 +65,7 @@ test.describe("Landing — system theme", () => {
     expect(foregroundLightness).toBeGreaterThan(0.84);
     expect(theme.bodyBackground).not.toBe("rgb(255, 255, 255)");
     expect(Math.max(...bezel)).toBeLessThan(90);
+    await expect(page.getByTestId("keystone-window")).toHaveAttribute("data-ks-theme", "dark");
   });
 });
 
