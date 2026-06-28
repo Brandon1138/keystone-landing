@@ -63,7 +63,10 @@ import {
   VpnKeyIcon,
 } from "./AppIcons";
 
+const SYSTEM_THEME_QUERY = "(prefers-color-scheme: dark)";
+
 type IconCmp = ComponentType<{ className?: string }>;
+type DemoThemePreference = "light" | "dark" | "system";
 type Route =
   | "dashboard"
   | "benchmarks"
@@ -175,6 +178,11 @@ function CrossGlyph({ className = "" }: { className?: string }) {
 
 function statusDot(status: string) {
   return STATUS_BG[status] ?? "var(--status-idle)";
+}
+
+function getSitePrefersDark(systemTheme: MediaQueryList) {
+  const explicit = document.documentElement.getAttribute("data-theme");
+  return explicit === "dark" || (explicit !== "light" && systemTheme.matches);
 }
 
 /* ── Panel head shared by every screen ───────────────────────────────── */
@@ -1943,31 +1951,24 @@ function ImportScreen() {
 
 function SettingsScreen({
   dark,
-  setDark,
+  themePreference,
+  setThemePreference,
 }: {
   dark: boolean;
-  setDark: (v: boolean) => void;
+  themePreference: DemoThemePreference;
+  setThemePreference: (v: DemoThemePreference) => void;
 }) {
-  const [theme, setTheme] = useState(dark ? "dark" : "light");
   const [transitions, setTransitions] = useState(true);
   const [animatedBg, setAnimatedBg] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [saved, setSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    setTheme(dark ? "dark" : "light");
-  }, [dark]);
-
   useEffect(() => () => {
     if (savedTimer.current) clearTimeout(savedTimer.current);
   }, []);
 
-  const pickTheme = (value: string) => {
-    setTheme(value);
-    if (value === "dark") setDark(true);
-    else if (value === "light") setDark(false);
-  };
+  const pickTheme = (value: DemoThemePreference) => setThemePreference(value);
 
   const save = () => {
     setSaved(true);
@@ -1990,7 +1991,10 @@ function SettingsScreen({
         <div className="ks-grid-2">
           <label className="ks-field">
             <span>Theme</span>
-            <select value={theme} onChange={(e) => pickTheme(e.target.value)}>
+            <select
+              value={themePreference === "system" ? "system" : dark ? "dark" : "light"}
+              onChange={(e) => pickTheme(e.target.value as DemoThemePreference)}
+            >
               <option value="light">Light</option>
               <option value="dark">Dark</option>
               <option value="system">Follow System</option>
@@ -2063,6 +2067,7 @@ function SettingsScreen({
 export function KeystoneAppDemo({ brandMark }: { brandMark: ReactNode }) {
   const [route, setRoute] = useState<Route>("dashboard");
   const [dark, setDark] = useState(false);
+  const [themePreference, setThemePreference] = useState<DemoThemePreference>("system");
   const [today, setToday] = useState("");
 
   useEffect(() => {
@@ -2074,6 +2079,32 @@ export function KeystoneAppDemo({ brandMark }: { brandMark: ReactNode }) {
       }),
     );
   }, []);
+
+  useEffect(() => {
+    if (themePreference !== "system") return;
+
+    const systemTheme = window.matchMedia(SYSTEM_THEME_QUERY);
+    const syncTheme = () => setDark(getSitePrefersDark(systemTheme));
+    const observer = new MutationObserver(syncTheme);
+
+    syncTheme();
+    systemTheme.addEventListener("change", syncTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => {
+      systemTheme.removeEventListener("change", syncTheme);
+      observer.disconnect();
+    };
+  }, [themePreference]);
+
+  const chooseDemoTheme = (next: DemoThemePreference) => {
+    setThemePreference(next);
+    if (next === "dark") setDark(true);
+    if (next === "light") setDark(false);
+  };
 
   return (
     <div className="window-stage">
@@ -2129,7 +2160,7 @@ export function KeystoneAppDemo({ brandMark }: { brandMark: ReactNode }) {
               <button
                 type="button"
                 className="ks-theme-toggle"
-                onClick={() => setDark((v) => !v)}
+                onClick={() => chooseDemoTheme(dark ? "light" : "dark")}
                 aria-label={`Switch to ${dark ? "light" : "dark"} mode`}
               >
                 <span className={`ks-toggle-track${dark ? " is-on" : ""}`} aria-hidden />
@@ -2157,7 +2188,11 @@ export function KeystoneAppDemo({ brandMark }: { brandMark: ReactNode }) {
               {route === "codex" && <CodexScreen />}
               {route === "import" && <ImportScreen />}
               {route === "settings" && (
-                <SettingsScreen dark={dark} setDark={setDark} />
+                <SettingsScreen
+                  dark={dark}
+                  themePreference={themePreference}
+                  setThemePreference={chooseDemoTheme}
+                />
               )}
             </div>
           </main>
