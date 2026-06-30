@@ -6,5 +6,6 @@
   "notarized": true,
   "buildDate": "2026-06-20T17:15:24.750Z",
   "minimumMacOS": "13.5",
+  "verifiedMacOS": "27",
   "downloadUrl": "https://keystone-landing-silk.vercel.app/download"
 }

@@ -13,6 +13,7 @@ const valid = {
   notarized: true,
   buildDate: "2026-06-12",
   minimumMacOS: "13.0",
+  verifiedMacOS: "27",
   downloadUrl: "https://keystone-landing-silk.vercel.app/download",
 };
 

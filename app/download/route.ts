@@ -16,7 +16,7 @@ export async function GET() {
     return Response.json(
       {
         available: false,
-        message: "The verified macOS beta is not available yet.",
+        message: "The artifact origin is not configured for this environment.",
       },
       {
         status: 404,

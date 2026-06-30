@@ -51,7 +51,7 @@ npm run build
 | `npm run lint` | Next's ESLint config |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run test:release` | Validate manifest and release-state gating |
-| `npm run create:release-manifest` | Generate manifest facts from the verified DMG |
+| `npm run create:release-manifest` | Generate manifest facts from the verified DMG and tested macOS version |
 | `npm run verify:release` | Verify checksum, signing, notarization, and live response |
 | `npm test` | Playwright suite (boots `npm run dev` automatically) |
 

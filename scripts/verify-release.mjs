@@ -81,6 +81,9 @@ async function verify() {
     minimumMacOS:
       typeof manifest.minimumMacOS === "string" &&
       /^\d+\.\d+$/.test(manifest.minimumMacOS),
+    verifiedMacOS:
+      typeof manifest.verifiedMacOS === "string" &&
+      /^\d+(?:\.\d+)?$/.test(manifest.verifiedMacOS),
     response: response.ok && responseChecksum === manifest.sha256,
     sourceArchivesExposed: /github\.com\/.*\/archive\/refs/.test(
       response.output,
@@ -104,6 +107,7 @@ try {
     signed: false,
     notarized: false,
     minimumMacOS: false,
+    verifiedMacOS: false,
     response: false,
     sourceArchivesExposed: false,
     privateRepositoryExposed: false,
@@ -125,6 +129,7 @@ const passed =
   report.signed &&
   report.notarized &&
   report.minimumMacOS &&
+  report.verifiedMacOS &&
   report.response &&
   !report.sourceArchivesExposed &&
   !report.privateRepositoryExposed;

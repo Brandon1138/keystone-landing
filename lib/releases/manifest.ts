@@ -6,6 +6,7 @@ export type ReleaseManifest = {
   notarized: true;
   buildDate: string;
   minimumMacOS: string;
+  verifiedMacOS: string;
   downloadUrl: string;
 };
 
@@ -22,6 +23,7 @@ const SHA256 = /^[a-f0-9]{64}$/;
 const VERSION = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 const DMG = /^Keystone-[0-9A-Za-z.-]+-macOS\.dmg$/;
 const MACOS = /^\d+\.\d+$/;
+const MACOS_VERIFIED = /^\d+(?:\.\d+)?$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}(?:T.*Z)?$/;
 
 function siteOrigin() {
@@ -51,6 +53,8 @@ export function validateReleaseManifest(
     Number.isNaN(Date.parse(manifest.buildDate)) ||
     typeof manifest.minimumMacOS !== "string" ||
     !MACOS.test(manifest.minimumMacOS) ||
+    typeof manifest.verifiedMacOS !== "string" ||
+    !MACOS_VERIFIED.test(manifest.verifiedMacOS) ||
     typeof manifest.downloadUrl !== "string"
   ) {
     return null;

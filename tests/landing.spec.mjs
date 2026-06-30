@@ -82,7 +82,7 @@ test.describe("Landing — Nav", () => {
     const primaryNav = nav.getByRole("navigation", { name: "Primary" });
     const viewport = page.viewportSize();
     if ((viewport?.width ?? 0) > 1040) {
-      for (const label of ["Benchmarks", "Docs", "Releases"]) {
+      for (const label of ["Benchmarks", "Quantum", "Releases"]) {
         await expect(primaryNav.getByRole("link", { name: label })).toBeVisible();
       }
       await expect(primaryNav.getByRole("link", { name: "Overview" })).toHaveCount(0);
@@ -92,10 +92,11 @@ test.describe("Landing — Nav", () => {
     }
 
     await expect(nav.locator('a[aria-label="GitHub"]')).toHaveCount(0);
-    await expect(nav.getByTestId("release-pending")).toContainText("Release pending");
+    await expect(nav.getByTestId("release-pending")).toHaveCount(0);
     await expect(nav.getByTestId("download-unavailable")).toHaveCount(0);
     if ((viewport?.width ?? 0) > 1040) {
-      await expect(nav.getByRole("link", { name: /View benchmarks/i })).toBeVisible();
+      await expect(nav.getByText("1.0.0")).toBeVisible();
+      await expect(nav.getByRole("link", { name: /Download/i })).toHaveAttribute("href", "/download");
     }
   });
 });
@@ -191,41 +192,39 @@ test.describe("Landing — Evidence band", () => {
   });
 });
 
-test.describe("Landing — Local by design", () => {
+test.describe("Landing — Quantum", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  test("turns the proof points into a synchronized local terminal transcript", async ({ page }) => {
-    const section = page.locator("#local");
-    await expect(section.getByRole("heading", { name: "Not a cloud dashboard pretending to be cryptography." })).toBeVisible();
-    await expect(section.getByTestId("sticky-proof")).toBeVisible();
-    await expect(section.locator("[data-testid=proof-card]")).toHaveCount(3);
+  test("presents the measured Shor run and an interactive scaling predictor", async ({ page }) => {
+    const section = page.locator("#quantum");
+    await expect(section.getByRole("heading", { name: "We ran the attack." })).toBeVisible();
 
-    for (const title of ["Local execution", "Parameter evidence", "Exportable reports"]) {
-      await expect(section.getByRole("heading", { name: title })).toBeVisible();
-    }
-    const terminal = section.getByTestId("evidence-terminal");
-    await expect(terminal).toBeVisible();
+    // Beat 1: the measured run on real IBM hardware.
+    const run = section.getByLabel("Measured Shor run on IBM hardware");
+    await expect(run).toContainText("ibm_brisbane");
+    await expect(run).toContainText("3 × 5");
+    await expect(run).toContainText("34.53");
+    await expect(run).toContainText("234.7");
 
-    // The terminal starts with the local benchmark command and reads as still running.
-    await expect(terminal).toHaveAttribute("data-step", "0");
-    await expect(terminal.getByTestId("evidence-terminal-counter")).toHaveText("01 / 03");
-    await expect(terminal).toContainText("keystone bench --scheme ML-KEM-768 --iterations 10000");
-    await expect(terminal).toContainText("Local process");
-    await expect(terminal).toContainText("None");
-    await expect(terminal).toContainText("Run executing");
-    await expect(terminal).not.toContainText("keystone report export --format json --seal");
+    // Beat 2: the interactive resource scaling predictor.
+    const rail = section.getByRole("radiogroup", { name: "Cryptographic target" });
+    await expect(rail.getByRole("radio")).toHaveCount(4);
 
-    // Scrolling the copy advances the transcript until the record is sealed.
-    await section.getByRole("link", { name: /Read the docs/i }).scrollIntoViewIfNeeded();
-    await expect(terminal).toHaveAttribute("data-sealed", "true");
-    await expect(terminal.getByTestId("evidence-terminal-counter")).toHaveText("03 / 03");
-    await expect(terminal).toContainText("keystone report export --format json --seal");
-    await expect(terminal).toContainText("Export ready");
-    await expect(terminal).toContainText("Integrity verified");
-    await expect(terminal).toContainText("7F3A · 91C2 · B84E");
-    await expect(section.getByRole("link", { name: /Read the docs/i })).toHaveAttribute("href", /^\/docs\/?$/);
+    // RSA-2048 is the default selection.
+    const rsa = rail.getByRole("radio", { name: /RSA-2048/ });
+    await expect(rsa).toHaveAttribute("aria-checked", "true");
+    const readout = section.locator(".scale-readout");
+    await expect(readout).toContainText("6,157");
+    await expect(readout).toContainText("Shor's algorithm");
+    await expect(readout).toContainText("At risk");
+
+    // Selecting AES-256 switches the attack to Grover and the verdict to holding.
+    await rail.getByRole("radio", { name: /AES-256/ }).click();
+    await expect(readout).toContainText("Grover's search");
+    await expect(readout).toContainText("Holds");
+    await expect(readout).toContainText("6,681");
   });
 });
 
@@ -243,16 +242,18 @@ test.describe("Landing — Download", () => {
       signed: true,
       notarized: true,
       minimumMacOS: "13.5",
+      verifiedMacOS: "27",
     });
 
     const download = await request.get("/download", { maxRedirects: 0 });
-    expect(download.status()).toBe(307);
-    expect(download.headers().location).toBe(
-      "https://mjfyuqvvsvdktarm.public.blob.vercel-storage.com/keystone/Keystone-1.0.0-macOS.dmg",
-    );
+    expect(download.status()).toBe(404);
+    await expect(download.json()).resolves.toMatchObject({
+      available: false,
+      message: "The artifact origin is not configured for this environment.",
+    });
   });
 
-  test("closes with the verified macOS download anchored by the glyph", async ({ page }) => {
+  test("closes with the verified macOS download beside the signed release record", async ({ page }) => {
     await page.goto("/");
     const section = page.locator("#download");
     await expect(section.getByRole("heading", { name: "Keystone for macOS." })).toBeVisible();
@@ -260,8 +261,16 @@ test.describe("Landing — Download", () => {
       "href",
       "/download",
     );
-    await expect(section.getByRole("link", { name: /View evidence/i })).toHaveAttribute("href", /^\/reports\/?$/);
     await expect(section.locator('a[href="/download"]')).toHaveCount(1);
+
+    // The proof is inline, not behind a second call to action.
+    await expect(section.getByRole("link", { name: /View evidence/i })).toHaveCount(0);
+    const record = section.getByRole("figure", { name: /release record/i });
+    await expect(record).toBeVisible();
+    await expect(record.getByText("Keystone-1.0.0-macOS.dmg")).toBeVisible();
+    await expect(record.getByText("Verified macOS")).toBeVisible();
+    await expect(record.getByText("macOS 27")).toBeVisible();
+    await expect(record.getByText(/^a79db8d97bbcfcb11/)).toBeVisible();
     await expect(section.getByRole("link", { name: /View on GitHub/i })).toHaveCount(0);
   });
 });
@@ -277,10 +286,11 @@ test.describe("Landing — Footer", () => {
     }
 
     await expect(footer.locator("input, textarea")).toHaveCount(0);
+    await expect(footer.getByRole("link", { name: /Case study/i })).toHaveCount(0);
     await expect(footer.getByRole("link", { name: /Terms of Use/i })).toHaveAttribute("href", /^\/terms\/?$/);
     await expect(footer.getByRole("link", { name: /Privacy Policy/i })).toHaveAttribute("href", /^\/privacy\/?$/);
     await expect(
-      footer.getByText("Signed macOS Public Beta 1.0.0."),
+      footer.getByText("Signed macOS 1.0.0."),
     ).toBeVisible();
   });
 
@@ -351,8 +361,8 @@ test.describe("Landing — Mobile nav", () => {
     const menu = page.getByRole("navigation", { name: "Mobile" });
     await expect(menu).toBeVisible();
     await expect(menu.getByRole("link", { name: "Benchmarks" })).toHaveAttribute("href", "#benchmarks");
-    await expect(menu.getByRole("link", { name: "Docs", exact: true })).toHaveAttribute("href", /^\/docs\/?$/);
-    await expect(menu.getByTestId("release-pending")).toBeVisible();
+    await expect(menu.getByTestId("release-pending")).toHaveCount(0);
+    await expect(menu.getByRole("link", { name: /Download Keystone 1.0.0 for macOS/i })).toHaveAttribute("href", "/download");
     await expect(menu.getByTestId("download-unavailable")).toHaveCount(0);
 
     await page.keyboard.press("Escape");
@@ -360,14 +370,14 @@ test.describe("Landing — Mobile nav", () => {
   });
 });
 
-test("does not expose private source and links only the verified download", async ({ page }) => {
+test("does not expose private source and links the verified download", async ({ page }) => {
   await page.goto("/");
   await expect(
     page.locator('a[href*="github.com/Brandon1138/keystone"]'),
   ).toHaveCount(0);
   await expect(page.locator('a[href*="/archive/refs/"]')).toHaveCount(0);
   await expect(page.getByRole("link", { name: /View on GitHub/i })).toHaveCount(0);
-  await expect(page.getByTestId("release-pending").first()).toBeVisible();
-  await expect(page.getByText("Download unavailable").first()).toBeVisible();
-  await expect(page.locator('a[href="/download"]')).toHaveCount(0);
+  await expect(page.getByTestId("release-pending")).toHaveCount(0);
+  await expect(page.getByText("Download unavailable")).toHaveCount(0);
+  await expect(page.locator('a[href="/download"]').first()).toBeVisible();
 });

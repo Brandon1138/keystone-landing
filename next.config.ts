@@ -9,9 +9,7 @@ const SUB_PAGES = [
   "docs",
   "platform",
   "privacy",
-  "releases",
   "reports",
-  "schemes",
   "security",
   "terms",
 ] as const;

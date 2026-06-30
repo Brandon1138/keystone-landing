@@ -3,12 +3,7 @@ import { expect, test } from "@playwright/test";
 const footerPages = [
   { label: "Overview", path: "/platform/", heading: "Platform Overview" },
   { label: "Benchmarks", path: "/benchmarks/", heading: "Benchmarks" },
-  { label: "Schemes", path: "/schemes/", heading: "Schemes" },
-  { label: "Reports", path: "/reports/", heading: "Reports" },
-  { label: "Documentation", path: "/docs/", heading: "Documentation" },
   { label: "Blog", path: "/blog/", heading: "Research Notes" },
-  { label: "Security", path: "/security/", heading: "Security" },
-  { label: "Releases", path: "/releases/", heading: "Releases" },
   { label: "About", path: "/about/", heading: "About Keystone" },
   { label: "Contact", path: "/contact/", heading: "Contact" },
   { label: "Privacy", path: "/privacy/", heading: "Privacy" },
@@ -16,7 +11,7 @@ const footerPages = [
 ];
 
 const newFooterPages = footerPages.filter(({ path }) =>
-  ["/platform/", "/benchmarks/", "/schemes/", "/reports/", "/contact/"].includes(path),
+  ["/platform/", "/benchmarks/", "/contact/"].includes(path),
 );
 
 function oklchLightness(value) {
@@ -62,6 +57,59 @@ for (const { path } of footerPages) {
     }
   });
 }
+
+// Releases is no longer a static footer page: it is a React route that reuses
+// the landing's design language (SiteHeader, signed release record, dark
+// site-footer) rather than the shared static-page.css shell.
+test("releases route reuses the landing design language", async ({ page }) => {
+  const response = await page.goto("/releases");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.getByRole("heading", { level: 1, name: "Releases" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Keystone home" }).first()).toHaveAttribute("href", "/");
+
+  // It draws from the React design system, not the static shell.
+  await expect(page.locator('link[rel="stylesheet"][href="/static-page.css"]')).toHaveCount(0);
+
+  // The signed release record and its download path are present.
+  await expect(page.getByLabel("Signed release record")).toBeVisible();
+  await expect(page.locator(".release-actions .primary-action")).toHaveAttribute(
+    "href",
+    "/download",
+  );
+  await expect(page.getByRole("link", { name: "View manifest" })).toHaveAttribute(
+    "href",
+    "/releases/latest.json",
+  );
+
+  // Shares the landing's dark site-footer, not the static footer-lite.
+  await expect(page.locator("footer.site-footer")).toBeVisible();
+  await expect(page.locator("footer.footer-lite")).toHaveCount(0);
+});
+
+// Schemes is likewise a React route now: a catalog ledger in the landing's
+// design language rather than the shared static-page.css shell. Its visible
+// heading is "The Field"; the route stays at /schemes/.
+test("schemes route reuses the landing design language", async ({ page }) => {
+  const response = await page.goto("/schemes");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.getByRole("heading", { level: 1, name: "The Field" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Keystone home" }).first()).toHaveAttribute("href", "/");
+
+  // It draws from the React design system, not the static shell.
+  await expect(page.locator('link[rel="stylesheet"][href="/static-page.css"]')).toHaveCount(0);
+
+  // The classical-vs-post-quantum catalog and the two attacks are present.
+  await expect(page.getByRole("heading", { level: 2, name: "Classical" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Post-quantum" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 3, name: /Shor.s Algorithm/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 3, name: /Grover.s Algorithm/ })).toBeVisible();
+
+  // Shares the landing's dark site-footer, not the static footer-lite.
+  await expect(page.locator("footer.site-footer")).toBeVisible();
+  await expect(page.locator("footer.footer-lite")).toHaveCount(0);
+});
 
 test("static footer pages follow the system dark appearance", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });

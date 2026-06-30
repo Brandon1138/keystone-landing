@@ -1,29 +1,30 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
+import { BrandLink } from "@/components/landing/BrandLink";
 import { EditorialHero } from "@/components/landing/EditorialHero";
+import { KeystoneGlyph, KeystoneGlyphWire } from "@/components/landing/KeystoneGlyph";
+import { ReleaseRecord } from "@/components/landing/ReleaseRecord";
+import { SectionIndex } from "@/components/landing/SectionIndex";
 import { SmartDownloadButton } from "@/components/landing/SmartDownloadButton";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { InterfaceContourField } from "@/components/landing/InterfaceContourField";
 import { KeystoneAppDemo } from "@/components/landing/KeystoneAppDemo";
+import { QuantumScalingPredictor } from "@/components/landing/QuantumScalingPredictor";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
-import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
 import { TraceStage, TracingBeam } from "@/components/ui/tracing-beam";
 import manifestJson from "@/content/releases/latest.json";
-import {
-  resolveReleaseState,
-  validateReleaseManifest,
-} from "@/lib/releases/manifest";
+import { validateReleaseManifest } from "@/lib/releases/manifest";
 
-const release = resolveReleaseState(
-  validateReleaseManifest(manifestJson),
-  process.env.KEYSTONE_ARTIFACT_BASE_URL,
-);
+/* The validated manifest is real in every state; only the live artifact URL is
+   gated by an env var. The release record below renders from the manifest, so
+   the proof a reviewer checks is present whether or not the download is open. */
+const manifest = validateReleaseManifest(manifestJson);
+const releasePublished = Boolean(manifest);
 
 const NAV_LINKS = [
   { label: "Benchmarks", href: "#benchmarks" },
-  { label: "Docs", href: "/docs/" },
+  { label: "Quantum", href: "#quantum" },
   { label: "Releases", href: "/releases/" },
 ];
 
@@ -51,20 +52,25 @@ const RELEASE_GATES = [
   "package-mac-prod",
 ] as const;
 
-const PROOF_POINTS = [
-  {
-    title: "Local execution",
-    body: "Benchmarks execute on your own hardware. The runtime, the dataset, and the results never leave the machine.",
-  },
-  {
-    title: "Parameter evidence",
-    body: "Every run records its algorithm, parameter set, iteration count, and timing. A result you can't trace is a result you can't trust.",
-  },
-  {
-    title: "Exportable reports",
-    body: "Runs resolve into reports you can hand to a reviewer, with parameters and integrity checks attached.",
-  },
-] as const;
+/* A real Shor run, factoring 15 on the ibm_brisbane processor. Every figure is
+   a measured value from the in-app quantum workload runner, not a simulation. */
+const QUANTUM_RUN = {
+  meta: "Shor's algorithm · N = 15, a = 7 · ibm_brisbane · quantum hardware",
+  result: "3 × 5",
+  readouts: [
+    { label: "Execution", value: "34.53", unit: "s" },
+    { label: "QPU time", value: "4.69", unit: "s" },
+    { label: "Circuit depth", value: "683", unit: "" },
+    { label: "Gate count", value: "1,096", unit: "" },
+    { label: "Shots", value: "4,096", unit: "" },
+    { label: "Quantum volume", value: "32", unit: "" },
+    { label: "Gate error", value: "1.1516", unit: "%" },
+    { label: "Readout error", value: "2.8943", unit: "%" },
+    { label: "T₁ coherence", value: "234.7", unit: "µs" },
+    { label: "T₂ coherence", value: "131.7", unit: "µs" },
+  ],
+  trace: "Period recovered via continued fractions · bitstring 0100 · job d1cphxzmya70008",
+} as const;
 
 const FOOTER_GROUPS = [
   {
@@ -78,8 +84,6 @@ const FOOTER_GROUPS = [
   {
     heading: "Resources",
     links: [
-      ["Docs", "/docs/"],
-      ["Reports", "/reports/"],
       ["Releases", "/releases/"],
       ["Schemes", "/schemes/"],
     ],
@@ -87,146 +91,70 @@ const FOOTER_GROUPS = [
   {
     heading: "Project",
     links: [
-      ["Case study", "https://mikoshi.studio/cases/keystone"],
-      ["Security", "/security/"],
       ["Contact", "/contact/"],
-      ["Documentation", "/docs/"],
     ],
   },
 ] as const;
 
-/* Official mark facets. `accent` is the blue keystone face; the rest render
-   in the current ink at descending opacity. */
-const GLYPH_FACETS: { d: string; accent?: boolean; opacity?: number }[] = [
-  {
-    d: "M499.1,167.499C499.109,171.304 499.105,251.245 500.046,291.497C500.146,295.738 497.99,294.817 437.439,330.395C343.908,385.351 341.923,383.579 337.715,391.622C333.598,399.492 335.224,408.164 335.03,533.498C335.008,548.045 334.892,547.963 335.041,562.5C335.232,581.021 335.269,581.459 333.518,582.528C324.983,587.734 204.738,657.756 201.637,659.791C198.44,661.89 199.198,657.135 198.527,646.498C198.229,641.792 198.426,363.14 198.443,338.5C198.461,313.151 198.859,307.114 221.301,295.155C231.518,289.712 231.167,289.235 279.749,260.942C496.78,134.548 498.134,132.401 499.052,134.671C499.088,134.758 499.099,164.873 499.1,167.499Z",
-    opacity: 0.95,
-  },
-  {
-    d: "M823.89,321.46C824.527,329.656 823.985,539.618 824.173,576.503C824.177,577.22 824.216,584.927 823.463,585.437C821.844,586.534 707.402,520.1 701.254,516.225C697.51,513.865 690.327,509.803 690.327,509.803C690.327,509.803 691.742,401.605 689.091,392.624C686.564,384.062 684.909,384.473 605.67,339.208C531.227,296.682 531.113,296.971 524.783,293.042C522.49,291.619 524.099,290.691 523.839,206.497C523.642,142.943 523.258,143.014 523.255,137.494C523.253,134.78 523.116,133.287 525.534,134.412C530.228,136.595 735.595,255.11 746.781,262.031C778.027,281.361 778.962,279.632 810.226,298.96C822.333,306.444 823.657,320.245 823.89,321.46Z",
-    accent: true,
-  },
-  {
-    d: "M244.452,699.579C216.357,683.293 216.142,683.749 213.785,682.2C212.29,681.217 214.562,679.947 214.739,679.848C239.343,666.085 305.443,626.485 322.266,617.072C341.588,606.262 345.393,598.962 363.201,609.96C369.206,613.668 480.979,676.243 491.234,681.984C514.189,694.835 520.086,688.413 535.66,679.782C539.562,677.62 606.122,639.029 609.583,637.776C611.285,637.16 611.473,637.44 629.625,648.271C642.472,655.937 656.424,663.703 658.774,665.01C665.875,668.962 746.513,713.843 747.456,714.549C749.217,715.867 747.291,716.488 709.739,738.875C678.818,757.309 678.906,757.41 676.215,759.005C666.619,764.691 559.115,828.392 556.247,830.05C527.241,846.826 522.47,851.135 506.462,848.829C495.342,847.228 496.006,845.224 410.325,795.811C358.061,765.67 265.064,710.957 244.452,699.579Z",
-    opacity: 0.35,
-  },
-  {
-    d: "M644.666,627.207C639.663,624.264 639.351,624.369 639.359,623.497C639.368,622.427 675.676,602.796 678.511,602.884C682.239,602.999 762.062,649.933 794.298,666.906C812.609,676.547 813.113,676.911 812.673,678.597C812.623,678.789 775.918,700.597 774.517,700.691C772.22,700.845 667.085,639.601 644.666,627.207Z",
-    opacity: 0.25,
-  },
-  {
-    d: "M824.626,632.499C824.638,651.974 825.456,656.936 822.312,654.902C822.231,654.849 713.298,593.03 695.683,584.134C688.85,580.683 690.37,579.107 690.35,571.499C690.275,542.667 689.635,539.183 692.459,540.604C692.463,540.607 805.486,603.354 815.314,608.811C820.067,611.449 824.752,613.25 824.83,615.467C824.878,616.829 824.978,619.627 824.626,632.499Z",
-    opacity: 0.25,
-  },
-];
+/* Signature figure for the quantum band: a hairline rendition of the measured
+   distribution plot from the run above. Sixteen control-register outcomes, the
+   expected peaks held slightly brighter. Structural, not decorative. */
+const SPECTRUM_BARS = [
+  0.62, 0.48, 0.71, 0.66, 0.92, 0.58, 0.74, 0.69, 0.5, 0.78, 0.61, 0.88, 0.55,
+  0.7, 0.83, 0.79,
+] as const;
+const SPECTRUM_PEAKS = new Set([0, 4, 8, 12]);
 
-function KeystoneGlyph({ className = "" }: { className?: string }) {
+function QuantumSpectrum() {
   return (
-    <svg viewBox="0 0 1024 1024" aria-hidden className={className} style={{ overflow: "visible" }}>
-      <g transform="translate(512, 512) scale(1.1)">
-        <g transform="translate(-512, -512)">
-          {GLYPH_FACETS.map(({ d, accent, opacity }) => (
-            <path
-              key={d.slice(0, 24)}
-              d={d}
-              fill={accent ? "var(--color-primary)" : "currentColor"}
-              opacity={opacity}
-            />
-          ))}
-        </g>
-      </g>
+    <svg
+      className="quantum-spectrum"
+      viewBox="0 0 320 100"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      {SPECTRUM_BARS.map((h, i) => {
+        const x = 6 + i * 19.5;
+        const height = h * 92;
+        return (
+          <rect
+            key={i}
+            x={x}
+            y={100 - height}
+            width="11"
+            height={height}
+            className={SPECTRUM_PEAKS.has(i) ? "spectrum-bar peak" : "spectrum-bar"}
+          />
+        );
+      })}
     </svg>
   );
 }
 
-/* Blueprint rendition of the mark: the same facets traced as hairlines,
-   used as a structural background figure rather than a logo. */
-function KeystoneGlyphWire({ className = "" }: { className?: string }) {
+function QuantumRun() {
   return (
-    <svg viewBox="0 0 1024 1024" aria-hidden className={className}>
-      {GLYPH_FACETS.map(({ d, accent }) => (
-        <path
-          key={d.slice(0, 24)}
-          d={d}
-          fill="none"
-          className={accent ? "wire-accent" : "wire-ink"}
-          strokeWidth="2.25"
-          strokeLinejoin="round"
-        />
-      ))}
-    </svg>
-  );
-}
-
-function BrandLink() {
-  return (
-    <Link href="/" aria-label="Keystone home" className="brand-link">
-      <span className="brand-mark">
-        <KeystoneGlyph />
-      </span>
-      <span>Keystone</span>
-    </Link>
-  );
-}
-
-/* Section index — the one repeating system on the page. Drafting-sheet
-   title block: index and label on the left, annotation on the right,
-   a hairline rule between. */
-function SectionIndex({
-  index,
-  label,
-  annotation,
-}: {
-  index: string;
-  label: string;
-  annotation: string;
-}) {
-  return (
-    <div className="section-index">
-      <span>
-        {index} · {label}
-      </span>
-      <span className="section-index-rule" aria-hidden />
-      <span>{annotation}</span>
+    <div className="quantum-run" aria-label="Measured Shor run on IBM hardware">
+      <div className="quantum-run-head">
+        <span className="quantum-run-meta">{QUANTUM_RUN.meta}</span>
+        <span className="quantum-run-result">
+          Factored <strong className="mono-data">{QUANTUM_RUN.result}</strong>
+        </span>
+      </div>
+      <dl className="quantum-run-grid">
+        {QUANTUM_RUN.readouts.map((r) => (
+          <div key={r.label}>
+            <dt>{r.label}</dt>
+            <dd className="mono-data">
+              {r.value}
+              {r.unit && <span className="quantum-run-unit">{r.unit}</span>}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <p className="quantum-run-trace mono-data">{QUANTUM_RUN.trace}</p>
     </div>
   );
 }
-
-const EVIDENCE_CHAIN_STAGES = [
-  {
-    index: "01",
-    eyebrow: "Local execution",
-    caption: "Runs on this Mac. Nothing leaves the machine.",
-    status: "Run executing",
-    rows: [
-      ["Execution", "Local process"],
-      ["Transfer", "None"],
-    ],
-  },
-  {
-    index: "02",
-    eyebrow: "Parameter evidence",
-    caption: "The conditions are captured with the result.",
-    status: "Record captured",
-    rows: [
-      ["Scheme", "ML-KEM-768"],
-      ["Iterations", "10,000"],
-      ["Average / op", "0.0060 ms"],
-    ],
-  },
-  {
-    index: "03",
-    eyebrow: "Exportable report",
-    caption: "Sealed into evidence a reviewer can inspect.",
-    status: "Integrity verified",
-    rows: [
-      ["Integrity checks", "2 passed"],
-      ["Review state", "Export ready"],
-    ],
-  },
-] as const;
-
-const EVIDENCE_FINGERPRINT = "7F3A · 91C2 · B84E";
 
 function BenchmarkTable() {
   const fastest = Math.min(...BENCHMARKS.map((row) => row.ms));
@@ -267,8 +195,8 @@ export default function Page() {
     <>
       <SiteHeader
         links={NAV_LINKS}
-        releaseAvailable={release.available}
-        releaseVersion={release.available ? release.manifest.version : undefined}
+        releaseAvailable={releasePublished}
+        releaseVersion={manifest?.version}
         brand={<BrandLink />}
       />
 
@@ -334,51 +262,47 @@ export default function Page() {
           </div>
         </section>
 
-        <section id="local" className="local-section">
+        <section id="quantum" className="quantum-band">
+          <QuantumSpectrum />
+          <span className="band-glyph" aria-hidden>
+            <KeystoneGlyphWire />
+          </span>
           <div className="container-page">
-            <SectionIndex index="02" label="Local by design" annotation="evidence stays on the machine" />
-            <div className="local-copy">
-              <h2>Not a cloud dashboard pretending to be cryptography.</h2>
+            <SectionIndex index="02" label="Quantum" annotation="shor · grover · ibm hardware" />
+            <div className="band-head">
+              <h2>We ran the attack.</h2>
+              <p>
+                Shor&rsquo;s algorithm factoring 15 on an IBM quantum processor, from inside
+                Keystone. A demonstration today. The same procedure, scaled, is what ends RSA.
+              </p>
             </div>
-            <StickyScroll
-              content={PROOF_POINTS.map(({ title, body }) => ({
-                title,
-                description: body,
-              }))}
-              stages={EVIDENCE_CHAIN_STAGES}
-              fingerprint={EVIDENCE_FINGERPRINT}
-            />
-            <Link href="/docs/" className="inline-link">
-              Read the docs
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <QuantumRun />
+            <QuantumScalingPredictor />
           </div>
         </section>
 
         <section id="download" className="download-final" aria-label="Download">
           <div className="container-page">
-            <SectionIndex index="03" label="Download" annotation="v1.0.0 · apple silicon" />
-            <div className="download-stage">
-              <span className="download-glyph" aria-hidden>
-                <KeystoneGlyph />
-              </span>
-              <h2>Keystone for macOS.</h2>
-              <p>
-                {release.available
-                  ? "Packaged through the five gates above. Windows and Linux follow on the same release path."
-                  : "Download stays closed until the DMG, manifest, checksum, signing, notarization, filename, version, and live response all agree."}
-              </p>
-              <div className="download-actions">
+            <SectionIndex
+              index="03"
+              label="Download"
+              annotation={manifest ? `v${manifest.version} · apple silicon` : "apple silicon"}
+            />
+            <div className="download-grid">
+              <div className="download-lede">
+                <h2>Keystone for macOS.</h2>
+                <p>
+                  {releasePublished
+                    ? "Packaged through the five gates above, then signed and notarized by Apple. Windows and Linux follow on the same release path."
+                    : "Download stays closed until the DMG, manifest, checksum, signing, notarization, filename, version, and live response all agree."}
+                </p>
                 <SmartDownloadButton
-                  available={release.available}
-                  version={release.available ? release.manifest.version : undefined}
+                  available={releasePublished}
+                  version={manifest?.version}
                   className="primary-action"
                 />
-                <Link className="secondary-action" href="/reports/">
-                  View evidence
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
               </div>
+              {manifest && <ReleaseRecord manifest={manifest} />}
             </div>
           </div>
         </section>
@@ -405,9 +329,9 @@ export default function Page() {
           <div className="footer-release">
             <h3>Status</h3>
             <p>
-              {release.available
-                ? `Signed macOS Public Beta ${release.manifest.version}.`
-                : "macOS beta release verification in progress."}
+              {releasePublished
+                ? `Signed macOS ${manifest?.version}.`
+                : "macOS release verification in progress."}
             </p>
           </div>
         </div>

@@ -29,6 +29,7 @@
   --hero-contour-opacity: 0.52;
   --shadow-soft: 0 26px 80px color-mix(in oklab, var(--color-foreground) 11%, transparent);
   --shadow-window: 0 32px 84px color-mix(in oklab, var(--color-foreground) 22%, transparent);
+  --shadow-header: 0 12px 30px -18px color-mix(in oklab, var(--color-foreground) 32%, transparent);
   --hairline: color-mix(in oklab, var(--color-border) 74%, transparent);
 }
 
@@ -51,6 +52,7 @@
   --color-success: oklch(0.62 0.16 154);
   --shadow-soft: 0 26px 80px color-mix(in oklab, var(--color-foreground) 11%, transparent);
   --shadow-window: 0 32px 84px color-mix(in oklab, var(--color-foreground) 22%, transparent);
+  --shadow-header: 0 12px 30px -18px color-mix(in oklab, var(--color-foreground) 32%, transparent);
   --hairline: color-mix(in oklab, var(--color-border) 74%, transparent);
 }
 
@@ -74,6 +76,7 @@
     --color-success: oklch(0.72 0.13 154);
     --shadow-soft: 0 28px 92px color-mix(in oklab, oklch(0.02 0.01 255) 72%, transparent);
     --shadow-window: 0 36px 110px color-mix(in oklab, oklch(0.02 0.01 255) 82%, transparent);
+    --shadow-header: 0 12px 30px -18px color-mix(in oklab, oklch(0.02 0.01 255) 78%, transparent);
     --hairline: color-mix(in oklab, var(--color-border) 64%, transparent);
   }
 }
@@ -97,6 +100,7 @@
   --color-success: oklch(0.72 0.13 154);
   --shadow-soft: 0 28px 92px color-mix(in oklab, oklch(0.02 0.01 255) 72%, transparent);
   --shadow-window: 0 36px 110px color-mix(in oklab, oklch(0.02 0.01 255) 82%, transparent);
+  --shadow-header: 0 12px 30px -18px color-mix(in oklab, oklch(0.02 0.01 255) 78%, transparent);
   --hairline: color-mix(in oklab, var(--color-border) 64%, transparent);
 }
 
@@ -234,7 +238,7 @@ svg {
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
   box-shadow: 0 1px 0 color-mix(in oklab, var(--color-surface) 70%, transparent) inset,
-    0 12px 30px -18px color-mix(in oklab, var(--color-foreground) 32%, transparent);
+    var(--shadow-header);
 }
 
 .header-editorial {
@@ -2828,7 +2832,7 @@ svg {
 /* ——— 01 · Benchmarks — the dark technical band ——— */
 
 .evidence-band,
-.local-section,
+.quantum-band,
 .download-final {
   scroll-margin-top: 130px;
   padding-block: clamp(84px, 10vw, 142px);
@@ -3182,16 +3186,496 @@ svg {
   font-size: 11px;
 }
 
-/* ——— 02 · Local by design ——— */
+/* ——— 02 · Quantum ——— */
 
-.local-copy h2 {
-  max-width: 18ch;
-  margin: clamp(40px, 5vw, 64px) 0 0;
-  color: var(--color-foreground);
-  font-size: clamp(34px, 3.6vw, 54px);
-  font-weight: 720;
+/* The adversary sits in the deepest panel on the page: graphite descending to
+   near-black, the blueprint blue carried through as the single live accent.
+   Distinct from the benchmarks band (which it follows) by depth and by motif. */
+.quantum-band {
+  --ink: oklch(0.95 0.008 247);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, oklch(0.118 0.018 262), oklch(0.072 0.014 262)),
+    oklch(0.09 0.015 262);
+  color: var(--ink);
+}
+
+.quantum-band .container-page {
+  position: relative;
+  z-index: 1;
+}
+
+.quantum-band .section-index > span:first-child {
+  color: var(--color-primary-light);
+}
+
+.quantum-band .section-index > span:last-child {
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.quantum-band .section-index-rule {
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ink) 24%, transparent), transparent);
+}
+
+/* The mark, traced as in the benchmarks band but pushed further back and dimmer:
+   this section's primary figure is the measurement spectrum, not the glyph. */
+.quantum-band .band-glyph {
+  right: clamp(-260px, -16vw, -160px);
+  width: clamp(440px, 40vw, 640px);
+  opacity: 0.5;
+  transform: translateY(-50%) rotate(-6deg);
+}
+
+.quantum-band .band-glyph .wire-ink {
+  stroke: color-mix(in oklab, var(--ink) 9%, transparent);
+}
+
+.quantum-band .band-glyph .wire-accent {
+  stroke: color-mix(in oklab, var(--color-primary-light) 24%, transparent);
+}
+
+/* Measured distribution plot from the run, as a structural backdrop. */
+.quantum-spectrum {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 0;
+  width: 100%;
+  height: clamp(180px, 24vw, 300px);
+  opacity: 0.5;
+  pointer-events: none;
+  mask-image: linear-gradient(180deg, transparent, oklch(0 0 0 / 0.9) 78%);
+}
+
+.quantum-spectrum .spectrum-bar {
+  fill: color-mix(in oklab, var(--ink) 6%, transparent);
+}
+
+.quantum-spectrum .spectrum-bar.peak {
+  fill: color-mix(in oklab, var(--color-primary-light) 18%, transparent);
+}
+
+/* Utility: tabular monospace figures, matching the instrument readouts. */
+.quantum-band .mono-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Beat 1 — the measured run. A tight instrument readout, not a card. */
+.quantum-run {
+  margin-top: clamp(44px, 5vw, 72px);
+  border-top: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.quantum-run-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding: 22px 0 24px;
+}
+
+.quantum-run-meta {
+  color: color-mix(in oklab, var(--ink) 64%, transparent);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+.quantum-run-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.quantum-run-result strong {
+  color: var(--color-success);
+  font-size: 15px;
+  font-weight: 680;
+  letter-spacing: 0;
+}
+
+.quantum-run-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.quantum-run-grid > div {
+  padding: 22px 24px 22px 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 9%, transparent);
+}
+
+.quantum-run-grid > div:nth-child(n + 6) {
+  border-bottom: none;
+}
+
+.quantum-run-grid dt {
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.quantum-run-grid dd {
+  margin: 10px 0 0;
+  font-size: clamp(20px, 1.9vw, 26px);
+  font-weight: 560;
+  line-height: 1;
+}
+
+.quantum-run-unit {
+  margin-left: 3px;
+  color: color-mix(in oklab, var(--ink) 46%, transparent);
+  font-size: 0.56em;
+  font-weight: 500;
+}
+
+.quantum-run-trace {
+  margin: 20px 0 0;
+  color: color-mix(in oklab, var(--ink) 48%, transparent);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+/* Beat 2 — the interactive resource scaling predictor. */
+.quantum-scale {
+  margin-top: clamp(72px, 8vw, 120px);
+}
+
+.quantum-scale-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: end;
+  padding-bottom: clamp(32px, 4vw, 48px);
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.quantum-scale-head h3 {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+}
+
+.quantum-scale-head p {
+  max-width: 46ch;
+  margin: 0;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.scale-shell {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: clamp(36px, 4vw, 56px);
+}
+
+/* Left column: the selector rail anchored by the current-hardware ceiling, so
+   it reaches the depth of the readout panel and frames the gap below. */
+.scale-rail-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Target rail: a roving-tabindex radio group styled as instrument rows. */
+.scale-rail {
+  display: flex;
+  flex-direction: column;
+}
+
+.scale-today {
+  margin-top: auto;
+  padding-top: clamp(28px, 4vw, 44px);
+}
+
+.scale-today-label {
+  display: block;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scale-today-value {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(26px, 2.4vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.scale-today-sub {
+  display: block;
+  margin-top: 8px;
+  max-width: 28ch;
+  color: color-mix(in oklab, var(--ink) 56%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.scale-target {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 4px 18px 0;
+  border: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  background: none;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    color 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    padding-left 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scale-target:first-child {
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.scale-target:hover {
+  color: color-mix(in oklab, var(--ink) 88%, transparent);
+}
+
+.scale-target[data-selected="true"] {
+  padding-left: 14px;
+  color: var(--ink);
+}
+
+.scale-target:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.scale-target-name {
+  font-size: 17px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+
+.scale-target-attack {
+  color: color-mix(in oklab, var(--ink) 42%, transparent);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scale-target-dot,
+.scale-status-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--dot) 55%, transparent);
+}
+
+.scale-target-dot[data-status="vulnerable"],
+.scale-status-dot[data-status="vulnerable"],
+.scale-target-dot[data-status="at-risk"],
+.scale-status-dot[data-status="at-risk"] {
+  --dot: var(--color-secondary);
+}
+
+.scale-target-dot[data-status="deferred"],
+.scale-status-dot[data-status="deferred"] {
+  --dot: var(--color-primary-light);
+}
+
+.scale-target-dot[data-status="secure"],
+.scale-status-dot[data-status="secure"] {
+  --dot: var(--color-success);
+}
+
+.scale-target[data-selected="false"] .scale-target-dot {
+  box-shadow: none;
+  background: color-mix(in oklab, var(--dot) 60%, transparent);
+}
+
+/* Readout panel: the live instrument face. */
+.scale-readout {
+  position: relative;
+  padding: clamp(24px, 2.4vw, 34px);
+  border: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--ink) 5%, transparent), transparent);
+  animation: scale-readout-in 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scale-readout-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.scale-readout-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.scale-readout-name {
+  display: block;
+  font-size: clamp(26px, 2.6vw, 34px);
+  font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.06;
+}
+
+.scale-readout-family {
+  display: block;
+  margin-top: 6px;
+  color: color-mix(in oklab, var(--ink) 56%, transparent);
+  font-size: 13px;
+}
+
+.scale-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px;
+  border: 1px solid color-mix(in oklab, var(--status-color) 40%, transparent);
+  border-radius: 999px;
+  color: var(--status-color);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 640;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.scale-status[data-status="vulnerable"],
+.scale-status[data-status="at-risk"] {
+  --status-color: var(--color-secondary);
+}
+
+.scale-status[data-status="deferred"] {
+  --status-color: var(--color-primary-light);
+}
+
+.scale-status[data-status="secure"] {
+  --status-color: var(--color-success);
+}
+
+.scale-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: color-mix(in oklab, var(--ink) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  border-radius: 0;
+  margin-top: 24px;
+}
+
+.scale-metrics > div {
+  padding: 18px 18px 20px;
+  background: oklch(0.1 0.015 262);
+}
+
+.scale-metrics dt {
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 620;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scale-metrics dd {
+  margin: 9px 0 0;
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 560;
+  line-height: 1.15;
+}
+
+.scale-metrics dd small {
+  color: color-mix(in oklab, var(--ink) 48%, transparent);
+  font-size: 0.62em;
+  font-weight: 500;
+}
+
+.scale-gap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-top: 26px;
+}
+
+.scale-gap-value {
+  color: var(--color-primary-light);
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 640;
+  letter-spacing: -0.02em;
+}
+
+.scale-gap-label {
+  max-width: 34ch;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.scale-note {
+  max-width: 62ch;
+  margin: 22px 0 0;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.scale-sources {
+  margin: clamp(28px, 3vw, 40px) 0 0;
+  color: color-mix(in oklab, var(--ink) 44%, transparent);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.01em;
+}
+
+.quantum-band .inline-link {
+  margin-top: clamp(40px, 4vw, 56px);
+  color: var(--color-primary-light);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scale-target,
+  .scale-readout {
+    transition: none;
+    animation: none;
+  }
 }
 
 .sticky-proof {
@@ -3481,79 +3965,521 @@ svg {
     var(--color-background);
 }
 
-.download-stage {
+/* The close mirrors the band rhythm: a lede that states the artifact and acts on
+   it, set against the signed record that proves it. Items stretch so the
+   headline and the record's top edge share a datum, and the action settles to a
+   common baseline with the checksum. */
+.download-grid {
   display: grid;
-  justify-items: center;
-  margin-top: clamp(48px, 7vw, 88px);
-  text-align: center;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(36px, 5vw, 88px);
+  margin-top: clamp(44px, 5vw, 76px);
 }
 
-/* Datum centermark: dashed centerlines through the glyph, drafting style. */
-.download-glyph {
-  position: relative;
+.download-lede {
+  display: flex;
+  flex-direction: column;
+}
+
+.download-lede h2 {
+  margin: 0;
+  max-width: 11ch;
   color: var(--color-foreground);
-}
-
-.download-glyph::before,
-.download-glyph::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  pointer-events: none;
-}
-
-.download-glyph::before {
-  width: clamp(260px, 30vw, 420px);
-  height: 1px;
-  transform: translate(-50%, -50%);
-  background: repeating-linear-gradient(
-    90deg,
-    color-mix(in oklab, var(--color-border-strong) 55%, transparent) 0 7px,
-    transparent 7px 14px
-  );
-}
-
-.download-glyph::after {
-  width: 1px;
-  height: clamp(124px, 14vw, 168px);
-  transform: translate(-50%, -50%);
-  background: repeating-linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--color-border-strong) 55%, transparent) 0 7px,
-    transparent 7px 14px
-  );
-}
-
-.download-glyph svg {
-  width: clamp(88px, 10vw, 128px);
-  height: auto;
-  overflow: visible;
-}
-
-.download-stage h2 {
-  margin: 28px 0 0;
-  color: var(--color-foreground);
-  font-size: clamp(38px, 4.2vw, 60px);
+  font-size: clamp(40px, 4.6vw, 64px);
   font-weight: 720;
   letter-spacing: -0.02em;
-  line-height: 1.04;
+  line-height: 1.02;
 }
 
-.download-stage p {
-  max-width: 44ch;
-  margin: 18px 0 0;
+.download-lede p {
+  max-width: 40ch;
+  margin: 22px 0 0;
   color: var(--color-foreground-muted);
   font-size: 17px;
   line-height: 1.6;
 }
 
-.download-actions {
+.download-lede .primary-action {
+  align-self: flex-start;
+  margin-top: clamp(34px, 4vw, 56px);
+}
+
+/* Signed specimen: a precise record of the artifact, drafting-sheet flavor. */
+.release-record {
+  margin: 0;
+  border: 1px solid color-mix(in oklab, var(--color-border) 86%, transparent);
+  border-radius: 16px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-surface) 90%, transparent),
+      color-mix(in oklab, var(--color-surface-2) 40%, transparent)
+    ),
+    var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 78%, transparent),
+    0 22px 48px -28px color-mix(in oklab, var(--color-primary) 26%, transparent);
+}
+
+.release-record-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px clamp(20px, 2.4vw, 28px);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+}
+
+.release-record-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  background: color-mix(in oklab, var(--color-surface-2) 50%, var(--color-surface));
+  color: var(--color-foreground);
+}
+
+.release-record-mark svg {
+  width: 24px;
+  height: 24px;
+}
+
+.release-record-file {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.release-record-kicker {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-foreground-subtle);
+}
+
+.release-record-name {
+  font-size: 15px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  color: var(--color-foreground);
+  overflow-wrap: anywhere;
+}
+
+.release-record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.release-record-grid > div {
+  padding: 16px clamp(20px, 2.4vw, 28px);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-border) 42%, transparent);
+}
+
+/* Hairline column rule between the paired fields. */
+.release-record-grid > div:nth-child(odd) {
+  border-right: 1px solid color-mix(in oklab, var(--color-border) 42%, transparent);
+}
+
+.release-record-grid dt {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-foreground-subtle);
+}
+
+.release-record-grid dd {
+  margin: 7px 0 0;
+  font-size: 16px;
+  color: var(--color-foreground);
+}
+
+.release-record .mono-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.release-record-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 560;
+}
+
+.release-record-verified svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.75;
+  color: var(--color-primary);
+}
+
+/* Checksum spans the full width and sits at the foot, the reviewer's last
+   check. select-all so a single click grabs the whole digest. */
+.release-record-sum {
+  grid-column: 1 / -1;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.release-record-hash {
+  display: block;
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--color-foreground-muted);
+  overflow-wrap: anywhere;
+  user-select: all;
+  -webkit-user-select: all;
+  cursor: text;
+  border-radius: 6px;
+  transition: color 160ms ease-out, background-color 160ms ease-out;
+}
+
+.release-record-hash:hover,
+.release-record-hash:focus-visible {
+  color: var(--color-foreground);
+  background: color-mix(in oklab, var(--color-primary) 9%, transparent);
+  outline: none;
+}
+
+/* Releases page — a single editorial close composed from the landing's
+   download record. Reuses .download-final for the surface (and its theme
+   overrides); the extra top padding clears the fixed header since this is the
+   page's first band. */
+.release-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: clamp(124px, 16vh, 188px) clamp(84px, 10vw, 142px);
+}
+
+.release-hero .hero-measure-grid {
+  opacity: 0.32;
+}
+
+.release-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(36px, 5vw, 88px);
+  margin-top: clamp(44px, 5vw, 76px);
+}
+
+.release-lede {
+  display: flex;
+  flex-direction: column;
+}
+
+.release-lede h1 {
+  margin: 0;
+  max-width: 12ch;
+  color: var(--color-foreground);
+  font-size: clamp(40px, 4.6vw, 64px);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+.release-lede p {
+  max-width: 42ch;
+  margin: 22px 0 0;
+  color: var(--color-foreground-muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.release-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 36px;
+  gap: 14px;
+  margin-top: clamp(34px, 4vw, 56px);
+}
+
+@media (max-width: 920px) {
+  .release-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Schemes page — a catalog ledger drawn in the landing's evidence vocabulary.
+   Reuses .download-final for the surface (and its theme overrides); the extra
+   top padding clears the fixed header since this is the page's first band. The
+   tables echo .bench-table — a hairline ruled ledger — but key off the page's
+   foreground tokens so they read correctly in both themes on the light surface. */
+.schemes-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: clamp(124px, 16vh, 188px) clamp(84px, 10vw, 142px);
+}
+
+.schemes-hero .hero-measure-grid {
+  opacity: 0.32;
+}
+
+.schemes-lede {
+  margin-top: clamp(40px, 5vw, 72px);
+}
+
+.schemes-lede h1 {
+  margin: 0;
+  max-width: 14ch;
+  color: var(--color-foreground);
+  font-size: clamp(40px, 4.6vw, 64px);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+.schemes-lede p {
+  max-width: 58ch;
+  margin: 22px 0 0;
+  color: var(--color-foreground-muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.scheme-group {
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+.scheme-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 20px;
+}
+
+.scheme-group-head h2 {
+  margin: 0;
+  color: var(--color-foreground);
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.scheme-group-head p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--color-foreground-subtle);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.scheme-table {
+  margin-top: clamp(18px, 2.2vw, 28px);
+  border-top: 1px solid color-mix(in oklab, var(--color-foreground) 22%, transparent);
+}
+
+.scheme-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(0, 0.85fr) minmax(0, 1.1fr) minmax(150px, 0.7fr);
+  gap: clamp(16px, 2.6vw, 36px);
+  align-items: center;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-foreground) 12%, transparent);
+  padding: 22px 0;
+}
+
+.scheme-head {
+  padding: 14px 0;
+  color: var(--color-foreground-subtle);
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.scheme-head span:last-child {
+  text-align: right;
+}
+
+.scheme-name strong {
+  display: block;
+  color: var(--color-foreground);
+  font-size: 18px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+.scheme-name small {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-foreground-subtle);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.scheme-role {
+  color: var(--color-foreground-muted);
+  font-size: 15px;
+}
+
+.scheme-basis {
+  color: var(--color-foreground-muted);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.scheme-status {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.scheme-status svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.5;
+}
+
+.scheme-status[data-tone="broken"] {
+  color: var(--color-secondary);
+}
+
+.scheme-status[data-tone="weakened"] {
+  color: var(--color-secondary-light);
+}
+
+.scheme-status[data-tone="resistant"] {
+  color: var(--color-success);
+}
+
+/* The two attacks, presented as paired record cards — the signed-specimen
+   surface from the release record, sized for a short statement. */
+.bqp-block {
+  margin-top: clamp(60px, 8vw, 116px);
+}
+
+.bqp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.4vw, 28px);
+  margin-top: clamp(28px, 3.5vw, 48px);
+}
+
+.bqp-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in oklab, var(--color-border) 86%, transparent);
+  border-radius: 16px;
+  padding: clamp(22px, 2.6vw, 30px);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-surface) 90%, transparent),
+      color-mix(in oklab, var(--color-surface-2) 40%, transparent)
+    ),
+    var(--color-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--color-surface) 78%, transparent),
+    0 22px 48px -28px color-mix(in oklab, var(--color-primary) 26%, transparent);
+}
+
+.bqp-kicker {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-foreground-subtle);
+}
+
+.bqp-card h3 {
+  margin: 10px 0 0;
+  color: var(--color-foreground);
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 720;
+  letter-spacing: -0.015em;
+}
+
+.bqp-card > p {
+  margin: 12px 0 0;
+  color: var(--color-foreground-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.bqp-targets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: clamp(18px, 2vw, 24px);
+}
+
+.bqp-targets span {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 620;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-foreground-subtle);
+}
+
+.bqp-targets code {
+  padding: 4px 9px;
+  border: 1px solid color-mix(in oklab, var(--color-border) 78%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-surface-2) 50%, var(--color-surface));
+  color: var(--color-foreground);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .scheme-head {
+    display: none;
+  }
+
+  .scheme-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 16px;
+    padding: 18px 0;
+  }
+
+  .scheme-name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .scheme-status {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .scheme-role {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .scheme-basis {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .bqp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .site-footer {
@@ -3572,11 +4498,6 @@ svg {
 .site-footer .brand-link,
 .site-footer .brand-mark {
   color: oklch(0.96 0.008 247);
-}
-
-.site-footer .brand-mark {
-  border-color: color-mix(in oklab, oklch(0.96 0.008 247) 26%, transparent);
-  background: color-mix(in oklab, oklch(0.96 0.008 247) 5%, transparent);
 }
 
 .footer-grid p {
@@ -3685,14 +4606,14 @@ svg {
 
   :root:not([data-theme="light"]) .hero-section {
     background:
-      radial-gradient(ellipse at 72% 8%, color-mix(in oklab, var(--color-primary-glow) 26%, transparent), transparent 42%),
+      radial-gradient(ellipse 130% 72% at 50% -8%, color-mix(in oklab, var(--color-primary-glow) 15%, transparent), transparent 68%),
       linear-gradient(180deg, oklch(0.09 0.016 255), var(--color-background) 66%, oklch(0.065 0.012 255)),
       var(--color-background);
   }
 
   :root:not([data-theme="light"]) .hero-contour-field {
     mix-blend-mode: normal;
-    opacity: 0.72;
+    opacity: 0.55;
   }
 
   :root:not([data-theme="light"]) .evidence-band {
@@ -3718,14 +4639,14 @@ svg {
 
 :root[data-theme="dark"] .hero-section {
   background:
-    radial-gradient(ellipse at 72% 8%, color-mix(in oklab, var(--color-primary-glow) 26%, transparent), transparent 42%),
+    radial-gradient(ellipse 130% 72% at 50% -8%, color-mix(in oklab, var(--color-primary-glow) 15%, transparent), transparent 68%),
     linear-gradient(180deg, oklch(0.09 0.016 255), var(--color-background) 66%, oklch(0.065 0.012 255)),
     var(--color-background);
 }
 
 :root[data-theme="dark"] .hero-contour-field {
   mix-blend-mode: normal;
-  opacity: 0.72;
+  opacity: 0.55;
 }
 
 :root[data-theme="dark"] .evidence-band {
@@ -3857,6 +4778,28 @@ svg {
     justify-self: stretch;
   }
 
+  .quantum-scale-head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .scale-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .quantum-run-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .quantum-run-grid > div:nth-child(n + 6) {
+    border-bottom: 1px solid color-mix(in oklab, var(--ink) 9%, transparent);
+  }
+
+  .quantum-run-grid > div:nth-last-child(-n + 1) {
+    border-bottom: none;
+  }
+
   .hero-grid {
     min-height: auto;
     padding-top: clamp(84px, 11svh, 108px);
@@ -3874,6 +4817,22 @@ svg {
 @media (max-width: 760px) {
   .container-page {
     width: min(100% - 32px, var(--container-max));
+  }
+
+  .quantum-run-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quantum-run-grid > div {
+    padding-right: 16px;
+  }
+
+  .scale-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scale-readout {
+    padding: 22px 18px;
   }
 
   .header-editorial {
@@ -4070,7 +5029,7 @@ svg {
 
   .band-head h2,
   .local-copy h2,
-  .download-stage h2 {
+  .download-lede h2 {
     max-width: 14ch;
     font-size: clamp(34px, 10vw, 48px);
   }
@@ -4112,13 +5071,13 @@ svg {
     gap: 36px;
   }
 
-  .download-actions {
-    width: 100%;
-    flex-direction: column;
+  .download-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
   }
 
-  .download-actions .primary-action,
-  .download-actions .secondary-action {
+  .download-lede .primary-action {
+    align-self: stretch;
     width: 100%;
   }
 

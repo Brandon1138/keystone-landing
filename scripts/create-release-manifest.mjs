@@ -5,12 +5,18 @@ import { spawnSync } from "node:child_process";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 
-const [artifactPath, version, minimumMacOS, siteOrigin] =
+const [artifactPath, version, minimumMacOS, verifiedMacOS, siteOrigin] =
   process.argv.slice(2);
 
-if (!artifactPath || !version || !minimumMacOS || !siteOrigin) {
+if (
+  !artifactPath ||
+  !version ||
+  !minimumMacOS ||
+  !verifiedMacOS ||
+  !siteOrigin
+) {
   console.error(
-    "usage: node scripts/create-release-manifest.mjs <artifact.dmg> <version> <minimum-macos> <site-origin>",
+    "usage: node scripts/create-release-manifest.mjs <artifact.dmg> <version> <minimum-macos> <verified-macos> <site-origin>",
   );
   process.exit(2);
 }
@@ -61,6 +67,7 @@ const manifest = {
   notarized,
   buildDate: metadata.mtime.toISOString(),
   minimumMacOS,
+  verifiedMacOS,
   downloadUrl: new URL("/download", siteOrigin).toString(),
 };
 
